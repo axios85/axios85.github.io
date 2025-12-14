@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GWS & AD Integration | Learning_Path</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0a0b10;
+            --card-bg: #161b22;
+            --accent-color: #00f0ff;
+            --sync-color: #d2a8ff;
+            --auth-color: #79c0ff;
+            --text-primary: #e6e6e6;
+            --text-secondary: #8b949e;
+            --lab-btn-bg: rgba(35, 134, 54, 0.2); /* Verde oscuro transparente */
+            --lab-btn-border: #2ea043;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, .code-font, .lang-btn { font-family: 'Fira Code', monospace; }
+
+        /* HEADER */
+        header {
+            padding: 1rem 5%;
+            background: rgba(10, 11, 16, 0.98);
+            border-bottom: 1px solid #30363d;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .back-btn {
+            text-decoration: none; color: var(--accent-color); font-weight: 600;
+            display: flex; align-items: center; gap: 10px; transition: transform 0.2s;
+        }
+        .back-btn:hover { transform: translateX(-5px); }
+
+        /* IDIOMAS */
+        .lang-selector { display: flex; gap: 10px; }
+        .lang-btn {
+            background-color: #21262d; border: 1px solid #30363d; color: #e6e6e6;
+            cursor: pointer; font-size: 0.8rem; padding: 5px 10px; border-radius: 4px;
+            transition: all 0.2s ease; display: flex; align-items: center; gap: 6px;
+        }
+        .lang-btn:hover {
+            border-color: var(--accent-color); color: var(--accent-color);
+            background-color: rgba(0, 240, 255, 0.05);
+        }
+
+        /* CONTENIDO */
+        .container { max-width: 1000px; margin: 0 auto; padding: 3rem 1rem; }
+        .intro-box { border-left: 4px solid var(--accent-color); padding-left: 1.5rem; margin-bottom: 3rem; }
+        .tech-section { margin-bottom: 4rem; }
+        .section-header {
+            display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;
+            border-bottom: 1px solid #30363d; padding-bottom: 0.5rem;
+        }
+        .icon-sync { color: var(--sync-color); font-size: 1.5rem; }
+        .icon-auth { color: var(--auth-color); font-size: 1.5rem; }
+
+        /* GRID Y TARJETAS */
+        .cards-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .tech-card {
+            background: var(--card-bg); border: 1px solid #30363d; border-radius: 8px;
+            padding: 1.5rem; transition: transform 0.2s; 
+            display: flex; flex-direction: column; /* Para empujar botones al fondo */
+        }
+        .tech-card:hover { transform: translateY(-5px); border-color: var(--accent-color); }
+        .tech-card h3 { margin-bottom: 0.5rem; font-size: 1.1rem; }
+        .tech-card p { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem; flex-grow: 1; }
+
+        /* NUEVA ZONA DE BOTONES */
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: auto; /* Empuja los botones al final de la tarjeta */
+        }
+
+        /* Botón Docs (Estilo sutil) */
+        .doc-link {
+            flex: 1; text-align: center;
+            font-size: 0.8rem; color: var(--text-secondary); text-decoration: none;
+            border: 1px solid #30363d; padding: 6px 10px; border-radius: 4px; transition: all 0.2s;
+        }
+        .doc-link:hover { border-color: var(--accent-color); color: var(--accent-color); }
+
+        /* Botón Lab (Estilo destacado) */
+        .lab-link {
+            flex: 1; text-align: center;
+            font-size: 0.8rem; color: #fff; text-decoration: none; font-weight: 600;
+            background-color: var(--lab-btn-bg); border: 1px solid var(--lab-btn-border);
+            padding: 6px 10px; border-radius: 4px; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 5px;
+        }
+        .lab-link:hover { background-color: var(--lab-btn-border); color: #fff; box-shadow: 0 0 10px rgba(46, 160, 67, 0.4); }
+
+        footer { text-align: center; padding: 2rem; border-top: 1px solid #30363d; margin-top: 2rem; color: var(--text-secondary); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="back-btn" id="btn-back">&lt; ./Volver_al_Inicio</a>
+        <div class="lang-selector">
+            <button class="lang-btn" onclick="setLanguage('es')">🇪🇸 ES</button>
+            <button class="lang-btn" onclick="setLanguage('en')">🇬🇧 EN</button>
+            <button class="lang-btn" onclick="setLanguage('de')">🇩🇪 DE</button>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <h1 style="margin-bottom: 0.5rem; font-size: 2.2rem;" id="page-title">Integración GWS y Windows AD</h1>
+        
+        <div class="intro-box">
+            <p id="page-desc">
+                Para lograr una identidad híbrida efectiva, no basta con conectar cables. Es necesario orquestar dos procesos independientes pero complementarios: <strong>Sincronización</strong> y <strong>Autenticación</strong>.
+            </p>
+        </div>
+
+        <section class="tech-section">
+            <div class="section-header">
+                <span class="icon-sync">↻</span>
+                <h2 class="code-font" id="sync-title" style="color: var(--sync-color);">1. Sincronización de Usuarios</h2>
+            </div>
+            <p id="sync-desc" style="margin-bottom: 1.5rem; color: var(--text-secondary);">
+                El objetivo es replicar la estructura de usuarios, grupos y unidades organizativas desde el Directorio Activo hacia la nube de Google.
+            </p>
+
+            <div class="cards-grid">
+                <article class="tech-card">
+                    <h3 id="gcds-title">GCDS (Google Cloud Directory Sync)</h3>
+                    <p id="gcds-text">
+                        La herramienta estándar "on-premise". Se instala en un servidor Windows, consulta el LDAP local y empuja los cambios a Google vía API.
+                    </p>
+                    <div class="card-actions">
+                        <a href="https://support.google.com/a/answer/106368" target="_blank" class="doc-link" id="link-docs-1">Docs ></a>
+                        <a href="lab-gcds.html" class="lab-link" id="btn-lab-1">🧪 Lab Config</a>
+                    </div>
+                </article>
+
+                <article class="tech-card">
+                    <h3 id="entra-title">Google Connector para Entra ID</h3>
+                    <p id="entra-text">
+                        Enfoque "Cloud-first". Si tu AD ya sincroniza con Microsoft Entra ID, puedes usar el conector de aprovisionamiento automático.
+                    </p>
+                    <div class="card-actions">
+                        <a href="#" target="_blank" class="doc-link" id="link-docs-2">Docs ></a>
+                        <a href="lab-entra.html" class="lab-link" id="btn-lab-2">🧪 Lab Config</a>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="tech-section">
+            <div class="section-header">
+                <span class="icon-auth">🔒</span>
+                <h2 class="code-font" id="auth-title" style="color: var(--auth-color);">2. Estrategias de Autenticación</h2>
+            </div>
+            <p id="auth-desc" style="margin-bottom: 1.5rem; color: var(--text-secondary);">
+                Una vez que los usuarios existen en ambos lados, definimos cómo inician sesión.
+            </p>
+
+            <div class="cards-grid">
+                <article class="tech-card">
+                    <h3 id="gsps-title">Password Sync (GSPS)</h3>
+                    <p id="gsps-text">
+                        Sincronización de hash de contraseñas desde los controladores de dominio hacia Google. Simple y transparente para el usuario.
+                    </p>
+                    <div class="card-actions">
+                        <a href="https://support.google.com/a/answer/2611859" target="_blank" class="doc-link" id="link-docs-3">Docs ></a>
+                        <a href="lab-gsps.html" class="lab-link" id="btn-lab-3">🧪 Lab Config</a>
+                    </div>
+                </article>
+
+                <article class="tech-card">
+                    <h3 id="adfs-title">Federación SSO (ADFS)</h3>
+                    <p id="adfs-text">
+                        Redirección a tu Identity Provider (IdP) local para validar credenciales mediante SAML. Google nunca ve la contraseña.
+                    </p>
+                    <div class="card-actions">
+                        <a href="https://support.google.com/a/answer/60224" target="_blank" class="doc-link" id="link-docs-4">Docs ></a>
+                        <a href="lab-adfs.html" class="lab-link" id="btn-lab-4">🧪 Lab Config</a>
+                    </div>
+                </article>
+
+                <article class="tech-card">
+                    <h3 id="gcpw-title">GCPW (Google Credential Provider)</h3>
+                    <p id="gcpw-text">
+                        Permite iniciar sesión en Windows con la cuenta de Google. Ideal para gestión de dispositivos remotos.
+                    </p>
+                    <div class="card-actions">
+                        <a href="https://support.google.com/a/answer/9250996" target="_blank" class="doc-link" id="link-docs-5">Docs ></a>
+                        <a href="lab-gcpw.html" class="lab-link" id="btn-lab-5">🧪 Lab Config</a>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2025 fergava.es | GWS Lab</p>
+    </footer>
+
+    <script>
+        const translations = {
+            es: {
+                btnBack: "< ./Volver_al_Inicio",
+                pageTitle: "Integración GWS y Windows AD",
+                pageDesc: "Para lograr una identidad híbrida efectiva, no basta con conectar cables. Es necesario orquestar dos procesos independientes pero complementarios: Sincronización y Autenticación.",
+                syncTitle: "1. Sincronización de Usuarios",
+                syncDesc: "El objetivo es replicar la estructura de usuarios, grupos y unidades organizativas desde el Directorio Activo hacia la nube de Google.",
+                gcdsTitle: "GCDS (Google Cloud Directory Sync)",
+                gcdsText: "La herramienta estándar 'on-premise'. Se instala en un servidor Windows, consulta el LDAP local y empuja los cambios a Google vía API.",
+                entraTitle: "Google Connector para Entra ID",
+                entraText: "Enfoque 'Cloud-first'. Si tu AD ya sincroniza con Microsoft Entra ID, puedes usar el conector de aprovisionamiento automático.",
+                authTitle: "2. Estrategias de Autenticación",
+                authDesc: "Una vez que los usuarios existen en ambos lados, definimos cómo inician sesión.",
+                gspsTitle: "Password Sync (GSPS)",
+                gspsText: "Sincronización de hash de contraseñas desde los controladores de dominio hacia Google. Simple y transparente para el usuario.",
+                adfsTitle: "Federación SSO (ADFS)",
+                adfsText: "Redirección a tu Identity Provider (IdP) local para validar credenciales mediante SAML. Google nunca ve la contraseña.",
+                gcpwTitle: "GCPW (Google Credential Provider)",
+                gcpwText: "Permite iniciar sesión en Windows con la cuenta de Google. Ideal para gestión de dispositivos remotos.",
+                linkDocs: "Docs >",
+                btnLab: "🧪 Lab Config"
+            },
+            en: {
+                btnBack: "< ./Back_to_Home",
+                pageTitle: "GWS & Windows AD Integration",
+                pageDesc: "To achieve effective hybrid identity, connecting cables isn't enough. You must orchestrate two independent but complementary processes: Synchronization and Authentication.",
+                syncTitle: "1. User Synchronization",
+                syncDesc: "The goal is to replicate the structure of users, groups, and organizational units from Active Directory to the Google cloud.",
+                gcdsTitle: "GCDS (Google Cloud Directory Sync)",
+                gcdsText: "The standard 'on-premise' tool. Installed on a Windows server, it queries local LDAP and pushes changes to Google via API.",
+                entraTitle: "Google Connector for Entra ID",
+                entraText: "'Cloud-first' approach. If your AD already syncs with Microsoft Entra ID, you can use the automatic provisioning connector.",
+                authTitle: "2. Authentication Strategies",
+                authDesc: "Once users exist on both sides, we define how they log in.",
+                gspsTitle: "Password Sync (GSPS)",
+                gspsText: "Password hash synchronization from domain controllers to Google. Simple and transparent for the user.",
+                adfsTitle: "SSO Federation (ADFS)",
+                adfsText: "Redirection to your local Identity Provider (IdP) to validate credentials via SAML. Google never sees the password.",
+                gcpwTitle: "GCPW (Google Credential Provider)",
+                gcpwText: "Allows logging into Windows with a Google account. Ideal for remote device management.",
+                linkDocs: "Docs >",
+                btnLab: "🧪 Lab Config"
+            },
+            de: {
+                btnBack: "< ./Zurück_zur_Startseite",
+                pageTitle: "Integration von GWS & Windows AD",
+                pageDesc: "Für eine effektive hybride Identität reicht es nicht aus, Kabel zu verbinden. Es ist notwendig, zwei unabhängige, aber komplementäre Prozesse zu orchestrieren: Synchronisation und Authentifizierung.",
+                syncTitle: "1. Benutzersynchronisation",
+                syncDesc: "Ziel ist es, die Struktur von Benutzern, Gruppen und Organisationseinheiten vom Active Directory in die Google-Cloud zu replizieren.",
+                gcdsTitle: "GCDS (Google Cloud Directory Sync)",
+                gcdsText: "Das Standard-Tool 'on-premise'. Auf einem Windows-Server installiert, fragt es das lokale LDAP ab und überträgt Änderungen via API an Google.",
+                entraTitle: "Google Connector für Entra ID",
+                entraText: "'Cloud-first'-Ansatz. Wenn Ihr AD bereits mit Microsoft Entra ID synchronisiert, können Sie den automatischen Bereitstellungsconnector verwenden.",
+                authTitle: "2. Authentifizierungsstrategien",
+                authDesc: "Sobald Benutzer auf beiden Seiten existieren, definieren wir, wie sie sich anmelden.",
+                gspsTitle: "Password Sync (GSPS)",
+                gspsText: "Passwort-Hash-Synchronisation von Domänencontrollern zu Google. Einfach und transparent für den Benutzer.",
+                adfsTitle: "SSO-Föderation (ADFS)",
+                adfsText: "Weiterleitung an Ihren lokalen Identity Provider (IdP) zur Validierung der Anmeldeinformationen via SAML.",
+                gcpwTitle: "GCPW (Google Credential Provider)",
+                gcpwText: "Ermöglicht die Anmeldung bei Windows mit einem Google-Konto. Ideal für die Verwaltung von Remote-Geräten.",
+                linkDocs: "Doku >",
+                btnLab: "🧪 Lab Konfig"
+            }
+        };
+
+        function safeEdit(id, text) {
+            const element = document.getElementById(id);
+            if (element) element.innerText = text;
+        }
+
+        function setLanguage(lang) {
+            safeEdit('btn-back', translations[lang].btnBack);
+            safeEdit('page-title', translations[lang].pageTitle);
+            safeEdit('page-desc', translations[lang].pageDesc);
+
+            safeEdit('sync-title', translations[lang].syncTitle);
+            safeEdit('sync-desc', translations[lang].syncDesc);
+            safeEdit('gcds-title', translations[lang].gcdsTitle);
+            safeEdit('gcds-text', translations[lang].gcdsText);
+            safeEdit('entra-title', translations[lang].entraTitle);
+            safeEdit('entra-text', translations[lang].entraText);
+
+            safeEdit('auth-title', translations[lang].authTitle);
+            safeEdit('auth-desc', translations[lang].authDesc);
+            safeEdit('gsps-title', translations[lang].gspsTitle);
+            safeEdit('gsps-text', translations[lang].gspsText);
+            safeEdit('adfs-title', translations[lang].adfsTitle);
+            safeEdit('adfs-text', translations[lang].adfsText);
+            safeEdit('gcpw-title', translations[lang].gcpwTitle);
+            safeEdit('gcpw-text', translations[lang].gcpwText);
+
+            // Actualizar botones Docs
+            const docLinks = document.querySelectorAll('.doc-link');
+            docLinks.forEach(btn => btn.innerText = translations[lang].linkDocs);
+
+            // Actualizar botones Lab
+            const labLinks = document.querySelectorAll('.lab-link');
+            labLinks.forEach(btn => btn.innerText = translations[lang].btnLab);
+            
+            document.documentElement.lang = lang;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>fergava.es | IT Labs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0a0b10;
+            --card-bg: #161b22;
+            --accent-color: #00f0ff;
+            --text-primary: #e6e6e6;
+            --text-secondary: #8b949e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, .brand, .lang-btn { font-family: 'Fira Code', monospace; }
+
+        /* HEADER */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            background: rgba(10, 11, 16, 0.98);
+            border-bottom: 1px solid #30363d;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .brand { font-size: 1.4rem; color: var(--accent-color); font-weight: 600; }
+        .brand::before { content: "> "; color: var(--text-secondary); }
+        .brand::after { content: "_"; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* IDIOMAS */
+        .lang-selector { display: flex; gap: 10px; }
+        
+        .lang-btn {
+            background-color: #21262d;
+            border: 1px solid #30363d;
+            color: #e6e6e6;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 6px 12px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .lang-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            background-color: rgba(0, 240, 255, 0.05);
+        }
+
+        /* HERO */
+        .hero { text-align: center; padding: 5rem 1rem; max-width: 800px; margin: 0 auto; }
+        .hero h1 {
+            font-size: 2.5rem; margin-bottom: 1rem;
+            background: linear-gradient(90deg, #fff, var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p { font-size: 1.1rem; color: var(--text-secondary); }
+
+        /* GRID */
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .section-title { margin-bottom: 2rem; border-left: 4px solid var(--accent-color); padding-left: 1rem; }
+        .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        
+        .project-card {
+            background-color: var(--card-bg);
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .project-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+        }
+        .card-header { height: 4px; background: var(--accent-color); width: 0%; transition: width 0.3s ease; }
+        .project-card:hover .card-header { width: 100%; }
+        .card-body { padding: 1.5rem; }
+        .tag {
+            display: inline-block; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px;
+            background: #21262d; color: var(--accent-color); margin-bottom: 10px;
+            font-family: 'Fira Code', monospace; border: 1px solid #30363d;
+        }
+        .card-body h3 { margin-bottom: 0.5rem; color: #fff; }
+        .card-body p { color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1.5rem; }
+        
+        .btn {
+            display: inline-block; padding: 0.5rem 1rem; background-color: transparent;
+            border: 1px solid var(--text-secondary); color: var(--text-primary);
+            text-decoration: none; border-radius: 4px; transition: all 0.2s; font-size: 0.9rem;
+        }
+        .btn:hover { border-color: var(--accent-color); color: var(--accent-color); background: rgba(0, 240, 255, 0.05); }
+
+        footer { text-align: center; padding: 2rem; margin-top: 4rem; border-top: 1px solid #30363d; color: var(--text-secondary); font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">Learning_Path</div>
+        <div class="lang-selector">
+            <button class="lang-btn" onclick="setLanguage('es')">🇪🇸 ES</button>
+            <button class="lang-btn" onclick="setLanguage('en')">🇬🇧 EN</button>
+            <button class="lang-btn" onclick="setLanguage('de')">🇩🇪 DE</button>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1 id="hero-title">Laboratorios de TI & Redes</h1>
+            <p id="hero-desc">
+                Bienvenido a mi espacio de documentación técnica. Aquí encontrarás una colección detallada de laboratorios y proyectos donde pongo a prueba, configuro y desafío diferentes tecnologías.
+            </p>
+        </section>
+
+        <div class="container">
+            <h2 class="section-title" id="projects-title">Proyectos Recientes</h2>
+            
+            <div class="projects-grid">
+                <article class="project-card">
+                    <div class="card-header"></div>
+                    <div class="card-body">
+                        <span class="tag">INFRAESTRUCTURA</span>
+                        <h3 id="p1-title">Hardware y Montaje</h3>
+                        <p id="p1-desc">Hardware de segunda mano, modificaciones y pruebas de rendimiento (Benchmarking).</p>
+                        <a href="hardware-lab.html" class="btn" id="btn-read-1">Ver Lab ></a>
+                    </div>
+                </article>
+
+                <article class="project-card">
+                    <div class="card-header"></div>
+                    <div class="card-body">
+                        <span class="tag">CLOUD & IDENTITY</span>
+                        <h3 id="p2-title">Integración GWS y Windows AD</h3>
+                        <p id="p2-desc">Implementación de sincronización de identidades entre Active Directory on-premise y Google Workspace.</p>
+                        <a href="gws-ad-lab.html" class="btn" id="btn-read-2">Ver Lab ></a>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 fergava.es</p>
+    </footer>
+
+    <script>
+        const translations = {
+            es: {
+                heroTitle: "Laboratorios de TI & Redes",
+                heroDesc: "Bienvenido a mi espacio de documentación técnica. Aquí encontrarás una colección detallada de laboratorios y proyectos donde pongo a prueba, configuro y desafío diferentes tecnologías.",
+                projectsTitle: "Proyectos Recientes",
+                p1Title: "Hardware y Montaje",
+                // TEXTO ACTUALIZADO ES
+                p1Desc: "Hardware de segunda mano, modificaciones y pruebas de rendimiento (Benchmarking).",
+                p2Title: "Integración GWS y Windows AD",
+                p2Desc: "Implementación de sincronización de identidades entre Active Directory on-premise y Google Workspace.",
+                btnRead: "Ver Lab >"
+            },
+            en: {
+                heroTitle: "IT & Network Labs",
+                heroDesc: "Welcome to my technical documentation space. Here you will find a detailed collection of labs and projects where I test, configure, and challenge different technologies.",
+                projectsTitle: "Recent Projects",
+                p1Title: "Hardware & Assembly",
+                // TEXTO ACTUALIZADO EN
+                p1Desc: "Second-hand hardware, modifications, and performance benchmarking.",
+                p2Title: "GWS & Windows AD Integration",
+                p2Desc: "Implementation of identity synchronization between on-premise Active Directory and Google Workspace.",
+                btnRead: "View Lab >"
+            },
+            de: {
+                heroTitle: "IT & Netzwerk Labore",
+                heroDesc: "Willkommen in meinem Bereich für technische Dokumentation. Hier finden Sie eine detaillierte Sammlung von Laboren und Projekten, in denen ich verschiedene Technologien teste.",
+                projectsTitle: "Aktuelle Projekte",
+                p1Title: "Hardware & Montage",
+                // TEXTO ACTUALIZADO DE
+                p1Desc: "Gebrauchte Hardware, Modifikationen und Leistungsbenchmarking.",
+                p2Title: "Integration von GWS & Windows AD",
+                p2Desc: "Implementierung der Identitätssynchronisation zwischen lokalem Active Directory und Google Workspace.",
+                btnRead: "Labor ansehen >"
+            }
+        };
+
+        function safeEdit(id, text) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.innerText = text;
+            } else {
+                console.warn("No se encontró el elemento con ID: " + id);
+            }
+        }
+
+        function setLanguage(lang) {
+            console.log("Cambiando idioma a: " + lang);
+            
+            safeEdit('hero-title', translations[lang].heroTitle);
+            safeEdit('hero-desc', translations[lang].heroDesc);
+            safeEdit('projects-title', translations[lang].projectsTitle);
+            
+            safeEdit('p1-title', translations[lang].p1Title);
+            safeEdit('p1-desc', translations[lang].p1Desc);
+            safeEdit('btn-read-1', translations[lang].btnRead);
+
+            safeEdit('p2-title', translations[lang].p2Title);
+            safeEdit('p2-desc', translations[lang].p2Desc);
+            safeEdit('btn-read-2', translations[lang].btnRead);
+            
+            document.documentElement.lang = lang;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hardware Lab | Learning_Path</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0a0b10;
+            --card-bg: #161b22;
+            --accent-color: #00f0ff;
+            --success-color: #238636;
+            --warning-color: #f1e05a;
+            --text-primary: #e6e6e6;
+            --text-secondary: #8b949e;
+            --terminal-bg: #0d1117;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, .code-font, .lang-btn { font-family: 'Fira Code', monospace; }
+
+        /* HEADER */
+        header {
+            padding: 1rem 5%;
+            background: rgba(10, 11, 16, 0.98);
+            border-bottom: 1px solid #30363d;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-btn {
+            text-decoration: none; color: var(--accent-color); font-weight: 600;
+            display: flex; align-items: center; gap: 10px; transition: transform 0.2s;
+        }
+        .back-btn:hover { transform: translateX(-5px); }
+
+        /* IDIOMAS */
+        .lang-selector { display: flex; gap: 10px; }
+        .lang-btn {
+            background-color: #21262d; border: 1px solid #30363d; color: #e6e6e6;
+            cursor: pointer; font-size: 0.8rem; padding: 5px 10px; border-radius: 4px;
+            transition: all 0.2s ease; display: flex; align-items: center; gap: 6px;
+        }
+        .lang-btn:hover {
+            border-color: var(--accent-color); color: var(--accent-color);
+            background-color: rgba(0, 240, 255, 0.05);
+        }
+
+        /* CONTENIDO */
+        .container { max-width: 1000px; margin: 0 auto; padding: 3rem 1rem; }
+
+        /* SPECS */
+        .specs-section {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 4rem; align-items: center;
+        }
+        .specs-card {
+            background: var(--card-bg); border: 1px solid #30363d; border-radius: 8px;
+            padding: 2rem; position: relative; overflow: hidden;
+        }
+        .specs-card::before {
+            content: ""; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--accent-color);
+        }
+        .specs-list { list-style: none; margin-top: 1rem; }
+        .specs-list li {
+            margin-bottom: 0.8rem; border-bottom: 1px solid #30363d; padding-bottom: 0.5rem;
+            display: flex; justify-content: space-between;
+        }
+        .specs-label { color: var(--text-secondary); font-size: 0.9rem; }
+        .specs-value { font-family: 'Fira Code', monospace; color: #fff; text-align: right;}
+
+        /* GALERÍA */
+        .gallery {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem; margin-bottom: 4rem;
+        }
+        .gallery-img {
+            width: 100%; height: 300px; object-fit: cover; border-radius: 8px;
+            border: 2px solid #30363d; transition: all 0.3s ease;
+        }
+        .gallery-img:hover { border-color: var(--accent-color); transform: scale(1.02); }
+
+        /* STORY */
+        .story-section { margin-bottom: 4rem; }
+        .story-title { color: var(--accent-color); margin-bottom: 1rem; font-size: 1.5rem; }
+        .highlight-box {
+            background: rgba(0, 240, 255, 0.05); border: 1px solid var(--accent-color);
+            padding: 1.5rem; border-radius: 8px; margin-top: 1rem;
+        }
+        .price-tag {
+            background: var(--success-color); color: white; padding: 2px 8px; border-radius: 4px;
+            font-size: 0.8rem; font-family: 'Fira Code', monospace; vertical-align: middle;
+        }
+
+        /* TERMINAL STYLE (NUEVO) */
+        .terminal-window {
+            background-color: var(--terminal-bg); border-radius: 6px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #30363d;
+            margin-top: 1.5rem; overflow: hidden; font-family: 'Fira Code', monospace; font-size: 0.85rem;
+        }
+        .terminal-header {
+            background-color: #161b22; padding: 8px 15px; display: flex; align-items: center;
+            border-bottom: 1px solid #30363d;
+        }
+        .terminal-dots { display: flex; gap: 6px; margin-right: 15px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot-red { background-color: #ff5f56; }
+        .dot-yellow { background-color: #ffbd2e; }
+        .dot-green { background-color: #27c93f; }
+        .terminal-title { color: var(--text-secondary); font-size: 0.8rem; }
+        .terminal-body { padding: 1.5rem; color: #d0d0d0; white-space: pre-wrap; overflow-x: auto; }
+        .cmd-prompt { color: var(--success-color); font-weight: bold; }
+        .cmd-input { color: #fff; }
+        .cmd-output { color: #8b949e; margin-top: 0.5rem; line-height: 1.4; }
+        .cmd-highlight { color: var(--accent-color); font-weight: bold; text-decoration: underline; }
+
+        /* TROUBLESHOOTING */
+        .troubleshoot {
+            background: #1c1818; border: 1px solid #b34a4a; border-radius: 8px; padding: 2rem;
+        }
+        .troubleshoot h3 { color: #ff7b72; display: flex; align-items: center; gap: 10px; }
+        .explanation { margin: 1rem 0; color: var(--text-secondary); }
+        .solution-link {
+            display: inline-block; margin-top: 1rem; color: var(--text-primary);
+            text-decoration: underline; text-underline-offset: 4px;
+        }
+        .solution-link:hover { color: var(--accent-color); }
+
+        @media (max-width: 768px) { .specs-section { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="back-btn" id="btn-back">&lt; ./Volver_al_Inicio</a>
+        
+        <div class="lang-selector">
+            <button class="lang-btn" onclick="setLanguage('es')">🇪🇸 ES</button>
+            <button class="lang-btn" onclick="setLanguage('en')">🇬🇧 EN</button>
+            <button class="lang-btn" onclick="setLanguage('de')">🇩🇪 DE</button>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <h1 style="margin-bottom: 0.5rem; font-size: 2.5rem;">Dell PowerEdge R720</h1>
+        <p id="page-desc" style="color: var(--text-secondary); margin-bottom: 3rem;">
+            El corazón de la infraestructura. Un servidor empresarial de segunda mano optimizado para virtualización.
+        </p>
+
+        <section class="gallery">
+            <img src="server1.jpg" alt="Dell R720 Frontal" class="gallery-img">
+            <img src="server2.jpg" alt="Dell R720 Interior" class="gallery-img">
+        </section>
+
+        <section class="specs-section">
+            <div>
+                <h2 class="code-font" id="specs-title" style="margin-bottom: 1rem; color: var(--accent-color);"> > System_Specs</h2>
+                <p id="specs-desc">
+                    Adquirido de segunda mano, este R720 es una bestia de la virtualización capaz de levantar decenas de máquinas virtuales y contenedores simultáneamente.
+                </p>
+            </div>
+            
+            <div class="specs-card">
+                <ul class="specs-list">
+                    <li><span class="specs-label">CPU</span> <span class="specs-value">2x Intel Xeon E5-2690 v2</span></li>
+                    <li><span class="specs-label" id="label-cores">Núcleos</span> <span class="specs-value">20 Cores / 40 Threads</span></li>
+                    <li><span class="specs-label">RAM</span> <span class="specs-value">256 GB DDR3 ECC</span></li>
+                    <li><span class="specs-label" id="label-hdd">Almacenamiento</span> <span class="specs-value">10x 500GB SAS (5TB)</span></li>
+                    <li><span class="specs-label" id="label-form">Factor de Forma</span> <span class="specs-value">Rack 2U</span></li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="story-section">
+            <h2 class="story-title code-font" id="story-title"># Modificación: Almacenamiento Rápido Low-Cost</h2>
+            <p id="story-desc">
+                Los discos mecánicos SAS están bien para datos masivos, pero el sistema operativo y las VMs necesitaban velocidad. El R720 no tiene ranuras M.2 nativas, así que improvisé una solución eficiente y económica.
+            </p>
+
+            <div class="highlight-box">
+                <h3 class="code-font" id="list-title" style="color: #fff; margin-bottom: 10px;">Lista de Materiales y Costes</h3>
+                <ul style="list-style: none; padding-left: 0;">
+                    <li style="margin-bottom: 10px;">
+                        🔹 <strong id="item-1">Adaptador PCIe a M.2 NVMe</strong> 
+                        <span class="price-tag">2,50 €</span> 
+                    </li>
+                    <li style="margin-bottom: 10px;">
+                        🔹 <strong id="item-2">Disipador de calor M.2</strong> 
+                        <span class="price-tag">2,00 €</span>
+                    </li>
+                    <li>
+                        🔹 <strong id="item-3">SSD WD Blue SN580 250GB</strong> 
+                        <span class="price-tag">36,00 €</span>
+                        <br><span id="item-3-sub" style="font-size: 0.85rem; color: var(--text-secondary); margin-left: 24px;">PCIe Gen4 x4, lectura hasta 4000 MB/s</span>
+                    </li>
+                </ul>
+                <p id="result-text" style="margin-top: 1rem; border-top: 1px solid var(--accent-color); padding-top: 1rem;">
+                    <strong>Resultado:</strong> Un disco de arranque ultrarrápido por poco más de 40€.
+                </p>
+            </div>
+        </section>
+
+        <section class="story-section">
+            <h2 class="code-font" id="bench-title" style="color: #fff;">> Benchmark FIO (Linux)</h2>
+            <p id="bench-desc" class="explanation">
+                Aquí se demuestra el límite físico del bus PCIe 3.0. El disco WD SN580 alcanza ~3600 MB/s, saturando el ancho de banda disponible del servidor R720, aunque el disco técnicamente soporte más velocidad (PCIe Gen4).
+            </p>
+
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <div class="terminal-dots">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                    </div>
+                    <span class="terminal-title">ferxo@gns3: ~ (ssh)</span>
+                </div>
+                <div class="terminal-body">
+<span class="cmd-prompt">ferxo@gns3:~$</span> <span class="cmd-input">sudo fio --name=benchmark_nvme --ioengine=libaio --rw=read --bs=1m --size=1G --numjobs=1 --iodepth=4 --runtime=60 --time_based --filename=/testfile --direct=1</span>
+<span class="cmd-output">benchmark_nvme: (g=0): rw=read, bs=(R) 1024KiB-1024KiB, (W) 1024KiB-1024KiB...
+fio-3.36
+Starting 1 process
+benchmark_nvme: Laying out IO file (1 file / 1024MiB)
+Jobs: 1 (f=1): [R(1)][100.0%][r=3452MiB/s][r=3452 IOPS][eta 00m:00s]
+benchmark_nvme: (groupid=0, jobs=1): err= 0: pid=2552: Sun Dec 14 09:41:26 2025
+  <span class="cmd-highlight">read: IOPS=3448, BW=3449MiB/s (3616MB/s)(202GiB/60001msec)</span>
+    slat (usec): min=58, max=657, avg=177.65, stdev=44.91
+    clat (usec): min=587, max=14950, avg=978.24, stdev=75.69
+     lat (usec): min=844, max=15595, avg=1155.89, stdev=62.79
+   bw (  MiB/s): min= 3348, max= 3456, per=100.00%, avg=3451.48
+   iops        : min= 3348, max= 3456, avg=3451.48
+  lat (usec)   : 750=0.03%, 1000=63.91%
+  cpu          : usr=3.85%, sys=68.93%, ctx=190477, majf=0, minf=1039
+
+Run status group 0 (all jobs):
+   READ: bw=3449MiB/s (3616MB/s), io=202GiB (217GB), run=60001-60001msec
+</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="troubleshoot">
+            <h3 class="code-font" id="trouble-title">⚠ Reto Técnico: Configuración RAID fallida</h3>
+            
+            <p class="explanation" id="trouble-1">
+                Al intentar configurar el array de discos inicial, me encontré con un muro: la utilidad de configuración RAID de la BIOS no aparecía. Los discos aparecían sueltos.
+            </p>
+            
+            <p class="explanation" id="trouble-2">
+                <strong>Diagnóstico:</strong> Descubrí que la controladora PERC había sido <em>cross-flasheada</em> anteriormente a lo que se conoce como <strong>IT Mode (Initiator Target)</strong>.
+            </p>
+
+            <ul style="margin-left: 20px; color: var(--text-secondary); margin-bottom: 1rem;">
+                <li id="trouble-li-1"><strong>IT Mode (HBA):</strong> Pasa los discos directamente al SO. Ideal para ZFS pero inhabilita el RAID por hardware.</li>
+                <li id="trouble-li-2"><strong>IR Mode (Integrated RAID):</strong> El firmware original que permite crear RAID 0, 1, 5, etc. desde la tarjeta.</li>
+            </ul>
+
+            <p class="explanation" id="trouble-3">
+                Para solucionarlo y poder gestionar el RAID por hardware, tuve que reflashear la tarjeta de vuelta a su firmware original (IR Mode).
+            </p>
+
+            <a href="https://fohdeesha.com/docs/perc.html" target="_blank" class="solution-link" id="trouble-link">
+                > Referencia: Guía técnica para flashear controladoras Dell PERC
+            </a>
+        </section>
+
+    </main>
+
+    <footer style="text-align: center; padding: 2rem; color: var(--text-secondary); border-top: 1px solid #30363d; margin-top: 2rem;">
+        <p>Learning_Path | Hardware Lab</p>
+    </footer>
+
+    <script>
+        const translations = {
+            es: {
+                btnBack: "&lt; ./Volver_al_Inicio",
+                pageDesc: "El corazón de la infraestructura. Un servidor empresarial de segunda mano optimizado para virtualización.",
+                specsTitle: "> System_Specs",
+                specsDesc: "Adquirido de segunda mano, este R720 es una bestia de la virtualización capaz de levantar decenas de máquinas virtuales y contenedores simultáneamente.",
+                labelCores: "Núcleos",
+                labelHdd: "Almacenamiento",
+                labelForm: "Factor de Forma",
+                storyTitle: "# Modificación: Almacenamiento Rápido Low-Cost",
+                storyDesc: "Los discos mecánicos SAS están bien para datos masivos, pero el sistema operativo y las VMs necesitaban velocidad. El R720 no tiene ranuras M.2 nativas, así que improvisé una solución eficiente y económica.",
+                listTitle: "Lista de Materiales y Costes",
+                item1: "Adaptador PCIe a M.2 NVMe",
+                item2: "Disipador de calor M.2",
+                item3: "SSD WD Blue SN580 250GB",
+                item3Sub: "PCIe Gen4 x4, lectura hasta 4000 MB/s",
+                resultText: "<strong>Resultado:</strong> Un disco de arranque ultrarrápido por poco más de 40€.",
+                
+                // Nuevas traducciones para Benchmark
+                benchTitle: "> Benchmark FIO (Linux)",
+                benchDesc: "Aquí se demuestra el límite físico del bus PCIe 3.0. El disco WD SN580 alcanza ~3600 MB/s, saturando el ancho de banda disponible del servidor R720, aunque el disco técnicamente soporte más velocidad (PCIe Gen4).",
+
+                troubleTitle: "⚠ Reto Técnico: Configuración RAID fallida",
+                trouble1: "Al intentar configurar el array de discos inicial, me encontré con un muro: la utilidad de configuración RAID de la BIOS no aparecía. Los discos aparecían sueltos.",
+                trouble2: "<strong>Diagnóstico:</strong> Descubrí que la controladora PERC había sido <em>cross-flasheada</em> anteriormente a lo que se conoce como <strong>IT Mode (Initiator Target)</strong>.",
+                troubleLi1: "<strong>IT Mode (HBA):</strong> Pasa los discos directamente al SO. Ideal para ZFS pero inhabilita el RAID por hardware.",
+                troubleLi2: "<strong>IR Mode (Integrated RAID):</strong> El firmware original que permite crear RAID 0, 1, 5, etc. desde la tarjeta.",
+                trouble3: "Para solucionarlo y poder gestionar el RAID por hardware, tuve que reflashear la tarjeta de vuelta a su firmware original (IR Mode).",
+                troubleLink: "> Referencia: Guía técnica para flashear controladoras Dell PERC"
+            },
+            en: {
+                btnBack: "&lt; ./Back_to_Home",
+                pageDesc: "The heart of the infrastructure. A second-hand enterprise server optimized for virtualization.",
+                specsTitle: "> System_Specs",
+                specsDesc: "Acquired second-hand, this R720 is a virtualization beast capable of running dozens of virtual machines and containers simultaneously.",
+                labelCores: "Cores",
+                labelHdd: "Storage",
+                labelForm: "Form Factor",
+                storyTitle: "# Mod: Low-Cost Fast Storage",
+                storyDesc: "SAS mechanical drives are fine for massive data, but the OS and VMs needed speed. The R720 has no native M.2 slots, so I improvised an efficient and cheap solution.",
+                listTitle: "Materials & Cost List",
+                item1: "PCIe to M.2 NVMe Adapter",
+                item2: "M.2 Heat Sink",
+                item3: "SSD WD Blue SN580 250GB",
+                item3Sub: "PCIe Gen4 x4, read up to 4000 MB/s",
+                resultText: "<strong>Result:</strong> An ultra-fast boot drive for just over €40.",
+                
+                // Benchmark
+                benchTitle: "> FIO Benchmark (Linux)",
+                benchDesc: "Here the physical limit of the PCIe 3.0 bus is demonstrated. The WD SN580 drive reaches ~3600 MB/s, saturating the available bandwidth of the R720 server, even though the drive technically supports higher speeds (PCIe Gen4).",
+
+                troubleTitle: "⚠ Technical Challenge: Failed RAID Config",
+                trouble1: "When trying to configure the initial disk array, I hit a wall: the BIOS RAID configuration utility didn't appear. The disks appeared as individual drives.",
+                trouble2: "<strong>Diagnosis:</strong> I discovered that the PERC controller had previously been cross-flashed to what is known as <strong>IT Mode (Initiator Target)</strong>.",
+                troubleLi1: "<strong>IT Mode (HBA):</strong> Passes disks directly to the OS. Ideal for ZFS but disables hardware RAID.",
+                troubleLi2: "<strong>IR Mode (Integrated RAID):</strong> The original firmware that allows creating RAID 0, 1, 5, etc. from the card.",
+                trouble3: "To fix it and manage hardware RAID, I had to re-flash the card back to its original firmware (IR Mode).",
+                troubleLink: "> Reference: Technical Guide for Flashing Dell PERC Controllers"
+            },
+            de: {
+                btnBack: "&lt; ./Zurück_zur_Startseite",
+                pageDesc: "Das Herz der Infrastruktur. Ein gebrauchter Enterprise-Server, optimiert für Virtualisierung.",
+                specsTitle: "> System_Spezifikationen",
+                specsDesc: "Aus zweiter Hand erworben, ist dieser R720 ein Virtualisierungs-Monster, das Dutzende von VMs und Containern gleichzeitig betreiben kann.",
+                labelCores: "Kerne",
+                labelHdd: "Speicher",
+                labelForm: "Formfaktor",
+                storyTitle: "# Mod: Schneller Low-Cost Speicher",
+                storyDesc: "Mechanische SAS-Festplatten sind gut für massive Daten, aber das Betriebssystem und die VMs brauchten Geschwindigkeit. Der R720 hat keine nativen M.2-Slots, also improvisierte ich eine effiziente Lösung.",
+                listTitle: "Material- & Kostenliste",
+                item1: "PCIe auf M.2 NVMe Adapter",
+                item2: "M.2 Kühlkörper",
+                item3: "SSD WD Blue SN580 250GB",
+                item3Sub: "PCIe Gen4 x4, Lesen bis zu 4000 MB/s",
+                resultText: "<strong>Ergebnis:</strong> Ein ultraschnelles Boot-Laufwerk für etwas mehr als 40 €.",
+                
+                // Benchmark
+                benchTitle: "> FIO Benchmark (Linux)",
+                benchDesc: "Hier wird das physische Limit des PCIe 3.0-Busses demonstriert. Das WD SN580-Laufwerk erreicht ~3600 MB/s und sättigt damit die verfügbare Bandbreite des R720-Servers, obwohl das Laufwerk technisch höhere Geschwindigkeiten (PCIe Gen4) unterstützt.",
+
+                troubleTitle: "⚠ Technische Herausforderung: RAID-Konfig",
+                trouble1: "Beim Versuch, das erste Disk-Array zu konfigurieren, stieß ich auf eine Wand: Das BIOS-RAID-Dienstprogramm erschien nicht. Die Festplatten erschienen einzeln.",
+                trouble2: "<strong>Diagnose:</strong> Ich entdeckte, dass der PERC-Controller zuvor auf den sogenannten <strong>IT-Mode (Initiator Target)</strong> cross-geflasht wurde.",
+                troubleLi1: "<strong>IT Mode (HBA):</strong> Gibt Festplatten direkt an das BS weiter. Ideal für ZFS, deaktiviert aber Hardware-RAID.",
+                troubleLi2: "<strong>IR Mode (Integrated RAID):</strong> Die Original-Firmware, die RAID 0, 1, 5 usw. von der Karte aus ermöglicht.",
+                trouble3: "Um das Problem zu beheben und Hardware-RAID zu nutzen, musste ich die Karte auf ihre ursprüngliche Firmware (IR Mode) zurückflashen.",
+                troubleLink: "> Referenz: Technische Anleitung zum Flashen von Dell PERC Controllern"
+            }
+        };
+
+        function safeEdit(id, text) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.innerHTML = text;
+            } else {
+                console.warn("Elemento no encontrado: " + id);
+            }
+        }
+
+        function setLanguage(lang) {
+            safeEdit('btn-back', translations[lang].btnBack);
+            safeEdit('page-desc', translations[lang].pageDesc);
+            safeEdit('specs-title', translations[lang].specsTitle);
+            safeEdit('specs-desc', translations[lang].specsDesc);
+            safeEdit('label-cores', translations[lang].labelCores);
+            safeEdit('label-hdd', translations[lang].labelHdd);
+            safeEdit('label-form', translations[lang].labelForm);
+            
+            safeEdit('story-title', translations[lang].storyTitle);
+            safeEdit('story-desc', translations[lang].storyDesc);
+            safeEdit('list-title', translations[lang].listTitle);
+            safeEdit('item-1', translations[lang].item1);
+            safeEdit('item-2', translations[lang].item2);
+            safeEdit('item-3', translations[lang].item3);
+            safeEdit('item-3-sub', translations[lang].item3Sub);
+            safeEdit('result-text', translations[lang].resultText);
+
+            // Nuevas llamadas de traducción para el benchmark
+            safeEdit('bench-title', translations[lang].benchTitle);
+            safeEdit('bench-desc', translations[lang].benchDesc);
+
+            safeEdit('trouble-title', translations[lang].troubleTitle);
+            safeEdit('trouble-1', translations[lang].trouble1);
+            safeEdit('trouble-2', translations[lang].trouble2);
+            safeEdit('trouble-li-1', translations[lang].troubleLi1);
+            safeEdit('trouble-li-2', translations[lang].troubleLi2);
+            safeEdit('trouble-3', translations[lang].trouble3);
+            safeEdit('trouble-link', translations[lang].troubleLink);
+            
+            document.documentElement.lang = lang;
+        }
+    </script>
+</body>
+</html>
