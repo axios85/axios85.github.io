@@ -127,3 +127,97 @@
                     <p id="p1-desc">Hardware de segunda mano, modificaciones y pruebas de rendimiento.</p>
                     <a href="hardware-lab.html" class="btn" id="btn-read-1">Ver Lab ></a>
                 </article>
+
+                <article class="project-card">
+                    <span class="tag">CLOUD & IDENTITY</span>
+                    <h3 id="p2-title">Integración GWS y Windows AD</h3>
+                    <p id="p2-desc">Integración de Directorio Activo con Google Workspace.</p>
+                    <a href="gws-ad-lab.html" class="btn" id="btn-read-2">Ver Lab ></a>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 fergava.es</p>
+    </footer>
+
+    <script>
+        const translations = {
+            es: {
+                heroTitle: "Laboratorios de TI & Redes",
+                heroDesc: "Documentación técnica de laboratorios, despliegues de red e integraciones cloud.",
+                p1Title: "Hardware y Montaje",
+                p1Desc: "Hardware de segunda mano, modificaciones y pruebas de rendimiento.",
+                p2Title: "Integración GWS y Windows AD",
+                p2Desc: "Integración de Directorio Activo con Google Workspace.",
+                btnRead: "Ver Lab >"
+            },
+            en: {
+                heroTitle: "IT & Network Labs",
+                heroDesc: "Technical documentation of labs, network deployments, and cloud integrations.",
+                p1Title: "Hardware & Assembly",
+                p1Desc: "Second-hand hardware, modifications, and performance benchmarking.",
+                p2Title: "GWS & Windows AD Integration",
+                p2Desc: "Active Directory integration with Google Workspace.",
+                btnRead: "View Lab >"
+            },
+            de: {
+                heroTitle: "IT & Netzwerk Labore",
+                heroDesc: "Technische Dokumentation von Laboren, Netzwerkimplementierungen und Cloud-Integrationen.",
+                p1Title: "Hardware & Montage",
+                p1Desc: "Gebrauchte Hardware, Modifikationen und Leistungsbenchmarking.",
+                p2Title: "Integration von GWS & Windows AD",
+                p2Desc: "Active Directory-Integration mit Google Workspace.",
+                btnRead: "Labor ansehen >"
+            }
+        };
+
+        function safeEdit(id, text) {
+            const element = document.getElementById(id);
+            if (element) element.innerText = text;
+        }
+
+        function setLanguage(lang) {
+            // 1. Cambiar los textos
+            safeEdit('hero-title', translations[lang].heroTitle);
+            safeEdit('hero-desc', translations[lang].heroDesc);
+            safeEdit('p1-title', translations[lang].p1Title);
+            safeEdit('p1-desc', translations[lang].p1Desc);
+            safeEdit('btn-read-1', translations[lang].btnRead);
+            safeEdit('p2-title', translations[lang].p2Title);
+            safeEdit('p2-desc', translations[lang].p2Desc);
+            safeEdit('btn-read-2', translations[lang].btnRead);
+            
+            // 2. Cambiar etiqueta HTML para SEO
+            document.documentElement.lang = lang;
+
+            // 3. GUARDAR EN MEMORIA DEL NAVEGADOR
+            localStorage.setItem('selectedLang', lang);
+
+            // 4. Actualizar visualmente qué botón está activo
+            updateActiveButton(lang);
+        }
+
+        function updateActiveButton(lang) {
+            // Quitamos la clase 'active' de todos
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Se la ponemos solo al que toca
+            const btn = document.getElementById('btn-' + lang);
+            if (btn) btn.classList.add('active');
+        }
+
+        // 5. AL CARGAR LA PÁGINA: Recuperar el idioma guardado
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('selectedLang');
+            if (savedLang) {
+                setLanguage(savedLang); // Si hay uno guardado, úsalo
+            } else {
+                // Si no hay nada guardado, por defecto marca ES como activo
+                updateActiveButton('es');
+            }
+        });
+    </script>
+</body>
+</html>
