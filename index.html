@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>fergava.es | IT Labs</title>
+    <title>fergava.es | IT Portfolio</title>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -21,22 +21,22 @@
             background-color: var(--bg-color);
             color: var(--text-primary);
             line-height: 1.6;
-            overflow-x: hidden; /* Evita scroll horizontal */
+            overflow-x: hidden; /* Evita scroll lateral indeseado */
         }
 
         h1, h2, h3, .brand, .lang-btn { font-family: 'Fira Code', monospace; }
 
-        /* HEADER */
+        /* HEADER - CONTENEDOR MAESTRO */
         header {
-            /* IMPORTANTE: position relative para que lo absoluto funcione dentro */
-            position: relative; 
+            position: relative; /* Referencia para el posicionamiento absoluto */
             display: flex;
-            justify-content: flex-start; /* Alineamos el logo a la izquierda */
-            align-items: center;
-            height: 70px; /* Altura fija para evitar colapsos */
-            padding: 0 5%;
+            align-items: center; /* Centrado vertical del logo */
+            padding: 0 5%;       /* Márgenes laterales */
             background: rgba(10, 11, 16, 0.98);
             border-bottom: 1px solid #30363d;
+            height: 80px;        /* Altura FIJA para evitar colapsos */
+            width: 100%;
+            position: sticky;
             top: 0;
             z-index: 1000;
         }
@@ -45,39 +45,40 @@
             font-size: 1.4rem; 
             color: var(--accent-color); 
             font-weight: 600;
-            z-index: 1001; /* Asegura que el logo esté por encima */
+            /* El logo vive a su aire en el flujo normal */
         }
         .brand::before { content: "> "; color: var(--text-secondary); }
         .brand::after { content: "_"; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
 
-        /* IDIOMAS - ESTRATEGIA ABSOLUTA (FIX FINAL) */
+        /* IDIOMAS - POSICIONAMIENTO ABSOLUTO (LA SOLUCIÓN) */
         .lang-selector { 
-            /* Se sale del flujo normal y se pega a la derecha */
-            position: absolute;
-            right: 5%; /* Misma distancia que el padding del header */
-            top: 50%;
-            transform: translateY(-50%); /* Centrado vertical exacto */
+            position: absolute;  /* Se coloca a la fuerza */
+            right: 5%;           /* Pegado a la derecha (mismo margen que el header) */
+            top: 50%;            /* Centrado vertical */
+            transform: translateY(-50%); /* Ajuste fino del centro */
             
             display: flex; 
             gap: 10px;
-            z-index: 9999; /* Capa superior absoluta */
-            background: rgba(10, 11, 16, 0.5); /* Fondo sutil por si se solapa */
+            z-index: 9999;       /* Siempre visible por encima de todo */
+            
+            /* Evitamos que mida 0 píxeles */
+            min-width: max-content; 
         }
-        
+
         .lang-btn {
             background-color: #21262d;
             border: 1px solid #30363d;
             color: #e6e6e6;
             cursor: pointer;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             padding: 6px 12px;
             border-radius: 4px;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
             gap: 6px;
-            white-space: nowrap; /* Prohibido partir el texto */
+            white-space: nowrap; /* Evita que el texto del botón se parta */
         }
 
         .lang-btn:hover {
@@ -86,14 +87,19 @@
             background-color: rgba(0, 240, 255, 0.05);
         }
 
-        /* Responsive: En móviles muy pequeños, ajustamos para que no se monten */
-        @media (max-width: 480px) {
+        /* AJUSTE PARA MÓVILES */
+        @media (max-width: 600px) {
             .brand { font-size: 1rem; }
-            .lang-btn { padding: 4px 8px; font-size: 0.75rem; }
-            .lang-selector { gap: 5px; }
+            .lang-btn { 
+                padding: 4px 8px; 
+                font-size: 0.75rem; 
+            }
+            .lang-btn span { display: none; } /* Opcional: Oculta 'ES/EN' si falta espacio */
+            header { padding: 0 3%; }
+            .lang-selector { right: 3%; }
         }
 
-        /* HERO */
+        /* RESTO DEL DISEÑO */
         .hero { text-align: center; padding: 5rem 1rem; max-width: 800px; margin: 0 auto; }
         .hero h1 {
             font-size: 2.5rem; margin-bottom: 1rem;
@@ -103,7 +109,6 @@
         }
         .hero p { font-size: 1.1rem; color: var(--text-secondary); }
 
-        /* GRID */
         .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
         .section-title { margin-bottom: 2rem; border-left: 4px solid var(--accent-color); padding-left: 1rem; }
         .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
@@ -124,6 +129,7 @@
         .card-header { height: 4px; background: var(--accent-color); width: 0%; transition: width 0.3s ease; }
         .project-card:hover .card-header { width: 100%; }
         .card-body { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; }
+        
         .tag {
             display: inline-block; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px;
             background: #21262d; color: var(--accent-color); margin-bottom: 10px;
@@ -136,7 +142,7 @@
             display: inline-block; padding: 0.5rem 1rem; background-color: transparent;
             border: 1px solid var(--text-secondary); color: var(--text-primary);
             text-decoration: none; border-radius: 4px; transition: all 0.2s; font-size: 0.9rem;
-            text-align: center; margin-top: auto; /* Empuja el botón al fondo */
+            text-align: center; margin-top: auto;
         }
         .btn:hover { border-color: var(--accent-color); color: var(--accent-color); background: rgba(0, 240, 255, 0.05); }
 
