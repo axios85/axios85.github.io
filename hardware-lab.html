@@ -30,14 +30,14 @@
 
         /* HEADER */
         header {
-            padding: 1rem 5%;
+            padding: 0 5%;
             background: rgba(10, 11, 16, 0.98);
             border-bottom: 1px solid #30363d;
             position: sticky;
             top: 0;
             z-index: 1000;
+            height: 80px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
         }
 
@@ -47,16 +47,44 @@
         }
         .back-btn:hover { transform: translateX(-5px); }
 
-        /* IDIOMAS */
-        .lang-selector { display: flex; gap: 10px; }
-        .lang-btn {
-            background-color: #21262d; border: 1px solid #30363d; color: #e6e6e6;
-            cursor: pointer; font-size: 0.8rem; padding: 5px 10px; border-radius: 4px;
-            transition: all 0.2s ease; display: flex; align-items: center; gap: 6px;
+        /* --- SELECTOR FLOTANTE (FIXED) --- */
+        .lang-selector { 
+            position: fixed;
+            top: 25px;
+            right: 5%;
+            z-index: 99999;
+            display: flex; 
+            gap: 8px;
         }
+
+        .lang-btn {
+            background-color: transparent;
+            border: 1px solid #30363d;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
         .lang-btn:hover {
-            border-color: var(--accent-color); color: var(--accent-color);
-            background-color: rgba(0, 240, 255, 0.05);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        /* ESTADO ACTIVO (ILUMINADO) */
+        .lang-btn.active {
+            background-color: rgba(0, 240, 255, 0.1);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        }
+
+        @media (max-width: 600px) {
+            .lang-selector { top: 25px; right: 3%; gap: 5px; }
+            .lang-btn { padding: 4px 6px; font-size: 0.75rem; background: rgba(10, 11, 16, 0.9); }
         }
 
         /* CONTENIDO */
@@ -105,7 +133,7 @@
             font-size: 0.8rem; font-family: 'Fira Code', monospace; vertical-align: middle;
         }
 
-        /* TERMINAL STYLE (NUEVO) */
+        /* TERMINAL STYLE */
         .terminal-window {
             background-color: var(--terminal-bg); border-radius: 6px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #30363d;
@@ -146,13 +174,13 @@
 
     <header>
         <a href="index.html" class="back-btn" id="btn-back">&lt; ./Volver_al_Inicio</a>
-        
-        <div class="lang-selector">
-            <button class="lang-btn" onclick="setLanguage('es')">🇪🇸 ES</button>
-            <button class="lang-btn" onclick="setLanguage('en')">🇬🇧 EN</button>
-            <button class="lang-btn" onclick="setLanguage('de')">🇩🇪 DE</button>
-        </div>
     </header>
+
+    <div class="lang-selector">
+        <button id="btn-es" class="lang-btn active" onclick="setLanguage('es')">ES</button>
+        <button id="btn-en" class="lang-btn" onclick="setLanguage('en')">EN</button>
+        <button id="btn-de" class="lang-btn" onclick="setLanguage('de')">DE</button>
+    </div>
 
     <main class="container">
         
@@ -238,9 +266,9 @@ benchmark_nvme: Laying out IO file (1 file / 1024MiB)
 Jobs: 1 (f=1): [R(1)][100.0%][r=3452MiB/s][r=3452 IOPS][eta 00m:00s]
 benchmark_nvme: (groupid=0, jobs=1): err= 0: pid=2552: Sun Dec 14 09:41:26 2025
   <span class="cmd-highlight">read: IOPS=3448, BW=3449MiB/s (3616MB/s)(202GiB/60001msec)</span>
-    slat (usec): min=58, max=657, avg=177.65, stdev=44.91
-    clat (usec): min=587, max=14950, avg=978.24, stdev=75.69
-     lat (usec): min=844, max=15595, avg=1155.89, stdev=62.79
+   slat (usec): min=58, max=657, avg=177.65, stdev=44.91
+   clat (usec): min=587, max=14950, avg=978.24, stdev=75.69
+    lat (usec): min=844, max=15595, avg=1155.89, stdev=62.79
    bw (  MiB/s): min= 3348, max= 3456, per=100.00%, avg=3451.48
    iops        : min= 3348, max= 3456, avg=3451.48
   lat (usec)   : 750=0.03%, 1000=63.91%
@@ -302,11 +330,8 @@ Run status group 0 (all jobs):
                 item3: "SSD WD Blue SN580 250GB",
                 item3Sub: "PCIe Gen4 x4, lectura hasta 4000 MB/s",
                 resultText: "<strong>Resultado:</strong> Un disco de arranque ultrarrápido por poco más de 40€.",
-                
-                // Nuevas traducciones para Benchmark
                 benchTitle: "> Benchmark FIO (Linux)",
                 benchDesc: "Aquí se demuestra el límite físico del bus PCIe 3.0. El disco WD SN580 alcanza ~3600 MB/s, saturando el ancho de banda disponible del servidor R720, aunque el disco técnicamente soporte más velocidad (PCIe Gen4).",
-
                 troubleTitle: "⚠ Reto Técnico: Configuración RAID fallida",
                 trouble1: "Al intentar configurar el array de discos inicial, me encontré con un muro: la utilidad de configuración RAID de la BIOS no aparecía. Los discos aparecían sueltos.",
                 trouble2: "<strong>Diagnóstico:</strong> Descubrí que la controladora PERC había sido <em>cross-flasheada</em> anteriormente a lo que se conoce como <strong>IT Mode (Initiator Target)</strong>.",
@@ -331,11 +356,8 @@ Run status group 0 (all jobs):
                 item3: "SSD WD Blue SN580 250GB",
                 item3Sub: "PCIe Gen4 x4, read up to 4000 MB/s",
                 resultText: "<strong>Result:</strong> An ultra-fast boot drive for just over €40.",
-                
-                // Benchmark
                 benchTitle: "> FIO Benchmark (Linux)",
                 benchDesc: "Here the physical limit of the PCIe 3.0 bus is demonstrated. The WD SN580 drive reaches ~3600 MB/s, saturating the available bandwidth of the R720 server, even though the drive technically supports higher speeds (PCIe Gen4).",
-
                 troubleTitle: "⚠ Technical Challenge: Failed RAID Config",
                 trouble1: "When trying to configure the initial disk array, I hit a wall: the BIOS RAID configuration utility didn't appear. The disks appeared as individual drives.",
                 trouble2: "<strong>Diagnosis:</strong> I discovered that the PERC controller had previously been cross-flashed to what is known as <strong>IT Mode (Initiator Target)</strong>.",
@@ -360,11 +382,8 @@ Run status group 0 (all jobs):
                 item3: "SSD WD Blue SN580 250GB",
                 item3Sub: "PCIe Gen4 x4, Lesen bis zu 4000 MB/s",
                 resultText: "<strong>Ergebnis:</strong> Ein ultraschnelles Boot-Laufwerk für etwas mehr als 40 €.",
-                
-                // Benchmark
                 benchTitle: "> FIO Benchmark (Linux)",
                 benchDesc: "Hier wird das physische Limit des PCIe 3.0-Busses demonstriert. Das WD SN580-Laufwerk erreicht ~3600 MB/s und sättigt damit die verfügbare Bandbreite des R720-Servers, obwohl das Laufwerk technisch höhere Geschwindigkeiten (PCIe Gen4) unterstützt.",
-
                 troubleTitle: "⚠ Technische Herausforderung: RAID-Konfig",
                 trouble1: "Beim Versuch, das erste Disk-Array zu konfigurieren, stieß ich auf eine Wand: Das BIOS-RAID-Dienstprogramm erschien nicht. Die Festplatten erschienen einzeln.",
                 trouble2: "<strong>Diagnose:</strong> Ich entdeckte, dass der PERC-Controller zuvor auf den sogenannten <strong>IT-Mode (Initiator Target)</strong> cross-geflasht wurde.",
@@ -402,7 +421,6 @@ Run status group 0 (all jobs):
             safeEdit('item-3-sub', translations[lang].item3Sub);
             safeEdit('result-text', translations[lang].resultText);
 
-            // Nuevas llamadas de traducción para el benchmark
             safeEdit('bench-title', translations[lang].benchTitle);
             safeEdit('bench-desc', translations[lang].benchDesc);
 
@@ -414,8 +432,31 @@ Run status group 0 (all jobs):
             safeEdit('trouble-3', translations[lang].trouble3);
             safeEdit('trouble-link', translations[lang].troubleLink);
             
+            // 1. SEO
             document.documentElement.lang = lang;
+
+            // 2. GUARDAR MEMORIA
+            localStorage.setItem('selectedLang', lang);
+
+            // 3. ACTUALIZAR BOTÓN
+            updateActiveButton(lang);
         }
+
+        function updateActiveButton(lang) {
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            const btn = document.getElementById('btn-' + lang);
+            if (btn) btn.classList.add('active');
+        }
+
+        // 4. CARGAR AL INICIO
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('selectedLang');
+            if (savedLang) {
+                setLanguage(savedLang);
+            } else {
+                updateActiveButton('es'); // Default
+            }
+        });
     </script>
 </body>
 </html>
