@@ -36,6 +36,10 @@
             position: sticky;
             top: 0;
             z-index: 1000;
+            
+            /* --- CORRECCIÓN 1: Asegurar ancho total --- */
+            width: 100%; 
+            box-sizing: border-box;
         }
 
         .brand { font-size: 1.4rem; color: var(--accent-color); font-weight: 600; }
@@ -44,7 +48,15 @@
         @keyframes blink { 50% { opacity: 0; } }
 
         /* IDIOMAS */
-        .lang-selector { display: flex; gap: 10px; }
+        .lang-selector { 
+            display: flex; 
+            gap: 10px;
+            
+            /* --- CORRECCIÓN 2: PROHIBIDO ENCOGERSE --- */
+            flex-shrink: 0; 
+            min-width: max-content; /* Ocupa el espacio que necesites, no menos */
+            align-items: center;
+        }
         
         .lang-btn {
             background-color: #21262d;
@@ -171,7 +183,6 @@
                 heroDesc: "Bienvenido a mi espacio de documentación técnica. Aquí encontrarás una colección detallada de laboratorios y proyectos donde pongo a prueba, configuro y desafío diferentes tecnologías.",
                 projectsTitle: "Proyectos Recientes",
                 p1Title: "Hardware y Montaje",
-                // TEXTO ACTUALIZADO ES
                 p1Desc: "Hardware de segunda mano, modificaciones y pruebas de rendimiento (Benchmarking).",
                 p2Title: "Integración GWS y Windows AD",
                 p2Desc: "Implementación de sincronización de identidades entre Active Directory on-premise y Google Workspace.",
@@ -182,7 +193,6 @@
                 heroDesc: "Welcome to my technical documentation space. Here you will find a detailed collection of labs and projects where I test, configure, and challenge different technologies.",
                 projectsTitle: "Recent Projects",
                 p1Title: "Hardware & Assembly",
-                // TEXTO ACTUALIZADO EN
                 p1Desc: "Second-hand hardware, modifications, and performance benchmarking.",
                 p2Title: "GWS & Windows AD Integration",
                 p2Desc: "Implementation of identity synchronization between on-premise Active Directory and Google Workspace.",
@@ -193,7 +203,6 @@
                 heroDesc: "Willkommen in meinem Bereich für technische Dokumentation. Hier finden Sie eine detaillierte Sammlung von Laboren und Projekten, in denen ich verschiedene Technologien teste.",
                 projectsTitle: "Aktuelle Projekte",
                 p1Title: "Hardware & Montage",
-                // TEXTO ACTUALIZADO DE
                 p1Desc: "Gebrauchte Hardware, Modifikationen und Leistungsbenchmarking.",
                 p2Title: "Integration von GWS & Windows AD",
                 p2Desc: "Implementierung der Identitätssynchronisation zwischen lokalem Active Directory und Google Workspace.",
