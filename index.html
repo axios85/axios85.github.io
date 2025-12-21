@@ -21,20 +21,18 @@
             background-color: var(--bg-color);
             color: var(--text-primary);
             line-height: 1.6;
-            overflow-x: hidden; /* Evita scroll lateral indeseado */
         }
 
         h1, h2, h3, .brand, .lang-btn { font-family: 'Fira Code', monospace; }
 
-        /* HEADER - CONTENEDOR MAESTRO */
+        /* HEADER */
         header {
-            position: relative; /* Referencia para el posicionamiento absoluto */
             display: flex;
-            align-items: center; /* Centrado vertical del logo */
-            padding: 0 5%;       /* Márgenes laterales */
+            align-items: center;
+            padding: 0 5%;
             background: rgba(10, 11, 16, 0.98);
             border-bottom: 1px solid #30363d;
-            height: 80px;        /* Altura FIJA para evitar colapsos */
+            height: 80px;
             width: 100%;
             position: sticky;
             top: 0;
@@ -45,151 +43,99 @@
             font-size: 1.4rem; 
             color: var(--accent-color); 
             font-weight: 600;
-            /* El logo vive a su aire en el flujo normal */
         }
-        .brand::before { content: "> "; color: var(--text-secondary); }
-        .brand::after { content: "_"; animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0; } }
 
-        /* IDIOMAS - POSICIONAMIENTO ABSOLUTO (LA SOLUCIÓN) */
+        /* --- SELECTOR FLOTANTE (VERSIÓN LIMPIA) --- */
         .lang-selector { 
-            position: absolute;  /* Se coloca a la fuerza */
-            right: 5%;           /* Pegado a la derecha (mismo margen que el header) */
-            top: 50%;            /* Centrado vertical */
-            transform: translateY(-50%); /* Ajuste fino del centro */
+            position: fixed; /* Fijo en la pantalla */
+            top: 25px;       /* Alineado con el header */
+            right: 5%;       /* Alineado con el margen derecho */
+            z-index: 99999;  /* Encima de todo */
             
             display: flex; 
-            gap: 10px;
-            z-index: 9999;       /* Siempre visible por encima de todo */
-            
-            /* Evitamos que mida 0 píxeles */
-            min-width: max-content; 
+            gap: 8px;
         }
 
         .lang-btn {
-            background-color: #21262d;
+            background-color: transparent;
             border: 1px solid #30363d;
-            color: #e6e6e6;
+            color: var(--text-secondary);
             cursor: pointer;
-            font-size: 0.9rem;
-            padding: 6px 12px;
+            font-size: 0.85rem;
+            padding: 6px 10px;
             border-radius: 4px;
+            font-weight: 600;
             transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            white-space: nowrap; /* Evita que el texto del botón se parta */
         }
 
         .lang-btn:hover {
             border-color: var(--accent-color);
             color: var(--accent-color);
-            background-color: rgba(0, 240, 255, 0.05);
+            box-shadow: 0 0 8px rgba(0, 240, 255, 0.2);
         }
 
-        /* AJUSTE PARA MÓVILES */
+        /* Para móviles: ajustamos un poco para que no tape el logo */
         @media (max-width: 600px) {
-            .brand { font-size: 1rem; }
-            .lang-btn { 
-                padding: 4px 8px; 
-                font-size: 0.75rem; 
+            .lang-selector {
+                top: 25px;
+                right: 3%;
+                gap: 5px;
             }
-            .lang-btn span { display: none; } /* Opcional: Oculta 'ES/EN' si falta espacio */
-            header { padding: 0 3%; }
-            .lang-selector { right: 3%; }
+            .lang-btn {
+                padding: 4px 6px;
+                font-size: 0.75rem;
+                background: rgba(10, 11, 16, 0.9); /* Fondo oscuro por si tapa algo */
+            }
         }
 
-        /* RESTO DEL DISEÑO */
+        /* Resto del estilo */
         .hero { text-align: center; padding: 5rem 1rem; max-width: 800px; margin: 0 auto; }
-        .hero h1 {
-            font-size: 2.5rem; margin-bottom: 1rem;
-            background: linear-gradient(90deg, #fff, var(--accent-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 1rem; color: #fff; }
         .hero p { font-size: 1.1rem; color: var(--text-secondary); }
-
         .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-        .section-title { margin-bottom: 2rem; border-left: 4px solid var(--accent-color); padding-left: 1rem; }
         .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
-        
-        .project-card {
-            background-color: var(--card-bg);
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            display: flex; flex-direction: column;
-        }
-        .project-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent-color);
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
-        }
-        .card-header { height: 4px; background: var(--accent-color); width: 0%; transition: width 0.3s ease; }
-        .project-card:hover .card-header { width: 100%; }
-        .card-body { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; }
-        
-        .tag {
-            display: inline-block; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px;
-            background: #21262d; color: var(--accent-color); margin-bottom: 10px;
-            font-family: 'Fira Code', monospace; border: 1px solid #30363d; width: fit-content;
-        }
-        .card-body h3 { margin-bottom: 0.5rem; color: #fff; }
-        .card-body p { color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1.5rem; flex-grow: 1; }
-        
-        .btn {
-            display: inline-block; padding: 0.5rem 1rem; background-color: transparent;
-            border: 1px solid var(--text-secondary); color: var(--text-primary);
-            text-decoration: none; border-radius: 4px; transition: all 0.2s; font-size: 0.9rem;
-            text-align: center; margin-top: auto;
-        }
-        .btn:hover { border-color: var(--accent-color); color: var(--accent-color); background: rgba(0, 240, 255, 0.05); }
-
-        footer { text-align: center; padding: 2rem; margin-top: 4rem; border-top: 1px solid #30363d; color: var(--text-secondary); font-size: 0.9rem; }
+        .project-card { background: var(--card-bg); border: 1px solid #30363d; padding: 1.5rem; border-radius: 8px; overflow: hidden; transition: transform 0.2s; }
+        .project-card:hover { transform: translateY(-5px); border-color: var(--accent-color); }
+        .tag { background: #21262d; color: var(--accent-color); padding: 2px 8px; font-size: 0.8rem; border-radius: 4px; font-family: 'Fira Code', monospace; border: 1px solid #30363d; display: inline-block; margin-bottom: 10px; }
+        .project-card h3 { color: #fff; margin: 10px 0; }
+        .project-card p { color: var(--text-secondary); margin-bottom: 1.5rem; }
+        .btn { display: inline-block; padding: 8px 16px; border: 1px solid var(--text-secondary); color: var(--text-primary); text-decoration: none; border-radius: 4px; transition: all 0.2s; font-size: 0.9rem; }
+        .btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
+        footer { text-align: center; padding: 2rem; color: #888; border-top: 1px solid #333; margin-top: 50px; }
     </style>
 </head>
 <body>
 
     <header>
         <div class="brand">Learning_Path</div>
-        <div class="lang-selector">
-            <button class="lang-btn" onclick="setLanguage('es')">🇪🇸 ES</button>
-            <button class="lang-btn" onclick="setLanguage('en')">🇬🇧 EN</button>
-            <button class="lang-btn" onclick="setLanguage('de')">🇩🇪 DE</button>
-        </div>
-    </header>
+        </header>
+
+    <div class="lang-selector">
+        <button class="lang-btn" onclick="setLanguage('es')">ES</button>
+        <button class="lang-btn" onclick="setLanguage('en')">EN</button>
+        <button class="lang-btn" onclick="setLanguage('de')">DE</button>
+    </div>
 
     <main>
         <section class="hero">
             <h1 id="hero-title">Laboratorios de TI & Redes</h1>
-            <p id="hero-desc">
-                Bienvenido a mi espacio de documentación técnica. Aquí encontrarás una colección detallada de laboratorios y proyectos donde pongo a prueba, configuro y desafío diferentes tecnologías.
-            </p>
+            <p id="hero-desc">Documentación técnica de laboratorios, despliegues de red e integraciones cloud.</p>
         </section>
 
         <div class="container">
-            <h2 class="section-title" id="projects-title">Proyectos Recientes</h2>
-            
             <div class="projects-grid">
                 <article class="project-card">
-                    <div class="card-header"></div>
-                    <div class="card-body">
-                        <span class="tag">INFRAESTRUCTURA</span>
-                        <h3 id="p1-title">Hardware y Montaje</h3>
-                        <p id="p1-desc">Hardware de segunda mano, modificaciones y pruebas de rendimiento (Benchmarking).</p>
-                        <a href="hardware-lab.html" class="btn" id="btn-read-1">Ver Lab ></a>
-                    </div>
+                    <span class="tag">INFRAESTRUCTURA</span>
+                    <h3 id="p1-title">Hardware y Montaje</h3>
+                    <p id="p1-desc">Hardware de segunda mano, modificaciones y pruebas de rendimiento.</p>
+                    <a href="hardware-lab.html" class="btn" id="btn-read-1">Ver Lab ></a>
                 </article>
 
                 <article class="project-card">
-                    <div class="card-header"></div>
-                    <div class="card-body">
-                        <span class="tag">CLOUD & IDENTITY</span>
-                        <h3 id="p2-title">Integración GWS y Windows AD</h3>
-                        <p id="p2-desc">Implementación de sincronización de identidades entre Active Directory on-premise y Google Workspace.</p>
-                        <a href="gws-ad-lab.html" class="btn" id="btn-read-2">Ver Lab ></a>
-                    </div>
+                    <span class="tag">CLOUD & IDENTITY</span>
+                    <h3 id="p2-title">Integración GWS y Windows AD</h3>
+                    <p id="p2-desc">Integración de Directorio Activo con Google Workspace.</p>
+                    <a href="gws-ad-lab.html" class="btn" id="btn-read-2">Ver Lab ></a>
                 </article>
             </div>
         </div>
@@ -203,47 +149,41 @@
         const translations = {
             es: {
                 heroTitle: "Laboratorios de TI & Redes",
-                heroDesc: "Bienvenido a mi espacio de documentación técnica. Aquí encontrarás una colección detallada de laboratorios y proyectos donde pongo a prueba, configuro y desafío diferentes tecnologías.",
-                projectsTitle: "Proyectos Recientes",
+                heroDesc: "Documentación técnica de laboratorios, despliegues de red e integraciones cloud.",
                 p1Title: "Hardware y Montaje",
-                p1Desc: "Hardware de segunda mano, modificaciones y pruebas de rendimiento (Benchmarking).",
+                p1Desc: "Hardware de segunda mano, modificaciones y pruebas de rendimiento.",
                 p2Title: "Integración GWS y Windows AD",
-                p2Desc: "Implementación de sincronización de identidades entre Active Directory on-premise y Google Workspace.",
+                p2Desc: "Integración de Directorio Activo con Google Workspace.",
                 btnRead: "Ver Lab >"
             },
             en: {
                 heroTitle: "IT & Network Labs",
-                heroDesc: "Welcome to my technical documentation space. Here you will find a detailed collection of labs and projects where I test, configure, and challenge different technologies.",
-                projectsTitle: "Recent Projects",
+                heroDesc: "Technical documentation of labs, network deployments, and cloud integrations.",
                 p1Title: "Hardware & Assembly",
                 p1Desc: "Second-hand hardware, modifications, and performance benchmarking.",
                 p2Title: "GWS & Windows AD Integration",
-                p2Desc: "Implementation of identity synchronization between on-premise Active Directory and Google Workspace.",
+                p2Desc: "Active Directory integration with Google Workspace.",
                 btnRead: "View Lab >"
             },
             de: {
                 heroTitle: "IT & Netzwerk Labore",
-                heroDesc: "Willkommen in meinem Bereich für technische Dokumentation. Hier finden Sie eine detaillierte Sammlung von Laboren und Projekten, in denen ich verschiedene Technologien teste.",
-                projectsTitle: "Aktuelle Projekte",
+                heroDesc: "Technische Dokumentation von Laboren, Netzwerkimplementierungen und Cloud-Integrationen.",
                 p1Title: "Hardware & Montage",
                 p1Desc: "Gebrauchte Hardware, Modifikationen und Leistungsbenchmarking.",
                 p2Title: "Integration von GWS & Windows AD",
-                p2Desc: "Implementierung der Identitätssynchronisation zwischen lokalem Active Directory und Google Workspace.",
+                p2Desc: "Active Directory-Integration mit Google Workspace.",
                 btnRead: "Labor ansehen >"
             }
         };
 
         function safeEdit(id, text) {
             const element = document.getElementById(id);
-            if (element) {
-                element.innerText = text;
-            }
+            if (element) element.innerText = text;
         }
 
         function setLanguage(lang) {
             safeEdit('hero-title', translations[lang].heroTitle);
             safeEdit('hero-desc', translations[lang].heroDesc);
-            safeEdit('projects-title', translations[lang].projectsTitle);
             safeEdit('p1-title', translations[lang].p1Title);
             safeEdit('p1-desc', translations[lang].p1Desc);
             safeEdit('btn-read-1', translations[lang].btnRead);
