@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Config: GCDS | Learning_Path</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-color: #0a0b10;
+            --card-bg: #161b22;
+            --accent-color: #00f0ff;
+            --sync-color: #d2a8ff;
+            --warning-bg: rgba(210, 153, 34, 0.15);
+            --warning-border: #d29922;
+            --text-primary: #e6e6e6;
+            --text-secondary: #8b949e;
+            --terminal-bg: #0d1117;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, .code-font, .lang-btn { font-family: 'Fira Code', monospace; }
+
+        /* HEADER */
+        header {
+            padding: 0 5%;
+            background: rgba(10, 11, 16, 0.98);
+            border-bottom: 1px solid #30363d;
+            position: sticky; top: 0; z-index: 1000; height: 80px;
+            display: flex; align-items: center;
+        }
+
+        .back-btn {
+            text-decoration: none; color: var(--accent-color); font-weight: 600;
+            display: flex; align-items: center; gap: 10px; transition: transform 0.2s;
+            font-family: 'Fira Code', monospace;
+        }
+        .back-btn:hover { transform: translateX(-5px); }
+
+        /* IDIOMAS */
+        .lang-selector { 
+            position: fixed; top: 25px; right: 5%; z-index: 99999;
+            display: flex; gap: 8px;
+        }
+        .lang-btn {
+            background-color: transparent; border: 1px solid #30363d;
+            color: var(--text-secondary); cursor: pointer; font-size: 0.85rem;
+            padding: 6px 10px; border-radius: 4px; font-weight: 600; transition: all 0.2s ease;
+        }
+        .lang-btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
+        .lang-btn.active {
+            background-color: rgba(0, 240, 255, 0.1); border-color: var(--accent-color);
+            color: var(--accent-color); box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        }
+
+        /* CONTENIDO */
+        .container { max-width: 1000px; margin: 0 auto; padding: 3rem 1rem; }
+        .intro-box { margin-bottom: 3rem; }
+        .intro-box h1 { font-size: 2.2rem; margin-bottom: 1rem; color: var(--sync-color); }
+        
+        /* DIAGRAMA */
+        .network-diagram {
+            background: #ffffff; border-radius: 12px; padding: 3rem 1rem; margin: 2rem 0;
+            display: flex; justify-content: center; align-items: center; gap: 10px;
+            border: 1px solid #30363d; flex-wrap: wrap;
+        }
+        .net-node {
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            color: #333; min-width: 140px;
+        }
+        .net-icon { font-size: 3.5rem; margin-bottom: 1rem; color: #0f172a; }
+        .net-icon.google { color: #ea4335; }
+        .net-label { font-weight: bold; font-size: 1rem; margin-bottom: 0.2rem; }
+        .net-ip { font-family: 'Fira Code', monospace; font-size: 0.8rem; color: #666; }
+        .net-link {
+            flex: 1; display: flex; flex-direction: column; align-items: center;
+            position: relative; min-width: 100px; max-width: 200px;
+        }
+        .link-line {
+            width: 100%; height: 2px; background-color: #333; position: relative; top: 5px;
+        }
+        .link-line::after {
+            content: ''; position: absolute; right: 0; top: -4px; width: 0; height: 0;
+            border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-left: 8px solid #333;
+        }
+        .link-text {
+            margin-bottom: 5px; font-size: 0.75rem; font-family: 'Fira Code', monospace;
+            color: #555; background: #fff; padding: 0 5px; z-index: 1;
+        }
+
+        /* TARJETAS */
+        .step-card {
+            background: var(--card-bg); border: 1px solid #30363d; border-radius: 8px;
+            padding: 1.5rem; margin-bottom: 2rem; position: relative;
+        }
+        .step-number {
+            position: absolute; top: -15px; left: 20px;
+            background: var(--bg-color); border: 1px solid var(--accent-color); color: var(--accent-color);
+            padding: 2px 10px; font-family: 'Fira Code', monospace; font-size: 0.9rem; border-radius: 4px;
+        }
+        .step-card h3 { margin-top: 0.5rem; margin-bottom: 1rem; color: #fff; }
+        
+        .ui-location {
+            display: inline-block; background: #21262d; color: var(--text-secondary);
+            font-size: 0.8rem; padding: 2px 8px; border-radius: 4px; margin-bottom: 1rem;
+            border: 1px solid #30363d; font-family: 'Fira Code', monospace;
+        }
+
+        .step-img {
+            max-width: 100%; width: auto; height: auto;
+            border-radius: 4px; border: 1px solid #30363d; margin-top: 1rem; display: block;
+        }
+
+        .param-list { list-style: none; margin-left: 0; }
+        .param-list li {
+            margin-bottom: 0.8rem; border-bottom: 1px solid #21262d; padding-bottom: 0.5rem;
+            display: flex; flex-direction: column;
+        }
+        .param-label { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 2px; }
+        .param-value { color: var(--accent-color); font-family: 'Fira Code', monospace; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 4px; width: fit-content;}
+        .param-hint { font-size: 0.75rem; color: #8b949e; margin-top: 4px; display: block; }
+
+        .arch-note {
+            background: rgba(35, 134, 54, 0.1); border-left: 4px solid #238636;
+            padding: 1rem; margin-bottom: 2rem; border-radius: 0 4px 4px 0;
+        }
+
+        .card-divider { border-top: 1px dashed #30363d; margin: 2rem 0; }
+        .sub-title { color: #fff; font-size: 1.1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;}
+
+        .tech-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px; border-radius: 4px; margin-top: 5px; font-size: 0.85rem; color: #ccc;
+        }
+        .tech-highlight { color: #d2a8ff; font-family: 'Fira Code', monospace; }
+
+        /* TABLA DE MAPEO */
+        .mapping-table { width:100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; color: #ccc; }
+        .mapping-table th { border-bottom: 1px solid #30363d; text-align: left; padding: 8px; color: var(--text-secondary); }
+        .mapping-table td { padding: 8px; border-bottom: 1px solid rgba(48, 54, 61, 0.5); }
+        .mapping-table tr:last-child td { border-bottom: none; }
+        .dn-text { font-family: 'Fira Code', monospace; color: #a5d6ff; font-size: 0.8rem; }
+
+        .warning-box {
+            background: var(--warning-bg); border: 1px solid var(--warning-border);
+            padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;
+        }
+        .warning-title { color: var(--warning-border); display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem; }
+
+        .terminal-window {
+            background-color: var(--terminal-bg); border-radius: 6px;
+            border: 1px solid #30363d; margin-top: 1rem; font-family: 'Fira Code', monospace; font-size: 0.85rem;
+        }
+        .terminal-header {
+            background-color: #161b22; padding: 8px 15px; border-bottom: 1px solid #30363d; color: var(--text-secondary); font-size: 0.75rem;
+        }
+        .terminal-body { padding: 1.5rem; color: #d0d0d0; white-space: pre-wrap; overflow-x: auto; }
+        .cmd-line { color: #fff; }
+        .cmd-arg { color: var(--accent-color); }
+
+        @media (max-width: 768px) {
+            .lang-selector { top: 25px; right: 3%; gap: 5px; }
+            .lang-btn { padding: 4px 6px; font-size: 0.75rem; background: rgba(10, 11, 16, 0.9); }
+            .network-diagram { flex-direction: column; gap: 20px; }
+            .link-line { width: 2px; height: 30px; margin: 0 auto; top: 0; }
+            .link-line::after { top: auto; bottom: -4px; right: -4px; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 8px solid #333; }
+            .net-link { min-width: auto; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="gws-ad-lab.html" class="back-btn" id="btn-back">&lt; ./Volver_al_Panel</a>
+    </header>
+
+    <div class="lang-selector">
+        <button id="btn-es" class="lang-btn active" onclick="setLanguage('es')">ES</button>
+        <button id="btn-en" class="lang-btn" onclick="setLanguage('en')">EN</button>
+        <button id="btn-de" class="lang-btn" onclick="setLanguage('de')">DE</button>
+    </div>
+
+    <main class="container">
+        
+        <div class="intro-box">
+            <h1>GCDS Configuration Lab</h1>
+            <p id="page-intro">Google Cloud Directory Sync (GCDS) es el puente unidireccional que permite replicar identidades desde tu infraestructura local (Active Directory) hacia Google Workspace.</p>
+        </div>
+        
+        <h3 class="code-font" id="diagram-title" style="margin-bottom: 1rem;">> Data_Flow_Topology</h3>
+        <p id="diagram-desc" style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">Flujo de Sincronización: El servidor GCDS extrae la información del DC, la procesa y empuja los cambios a la API de Google.</p>
+        
+        <div class="network-diagram">
+            <div class="net-node">
+                <i class="fa-solid fa-database net-icon"></i>
+                <div class="net-label">AD / DC</div>
+                <div class="net-ip">(192.168.1.2)</div>
+            </div>
+            <div class="net-link">
+                <span class="link-text">LDAP Query</span>
+                <div class="link-line"></div>
+            </div>
+            <div class="net-node">
+                <i class="fa-solid fa-server net-icon"></i>
+                <div class="net-label">SRV-GCDS</div>
+                <div class="net-ip">(192.168.1.11)</div>
+            </div>
+            <div class="net-link">
+                <span class="link-text">HTTPS API</span>
+                <div class="link-line"></div>
+            </div>
+            <div class="net-node">
+                <i class="fa-solid fa-cloud net-icon google"></i>
+                <div class="net-label">Google</div>
+                <div class="net-ip">Workspace</div>
+            </div>
+        </div>
+
+        <div class="arch-note">
+            <h4 id="arch-title" style="margin-bottom: 0.5rem; color: #fff;">ℹ Best Practice: Arquitectura</h4>
+            <p id="arch-desc" style="font-size: 0.9rem; color: #e6e6e6;">La herramienta GCDS se ha instalado en un <strong>Servidor Miembro (Member Server)</strong> unido al dominio, separado del Controlador de Dominio (DC) por seguridad y rendimiento.</p>
+        </div>
+
+        <div class="step-card">
+            <span class="step-number">STEP 00</span>
+            <h3 id="step0-title">Creación Service Account</h3>
+            <span class="ui-location" id="step0-loc">📍 Active Directory Users and Computers</span>
+            <p id="step0-desc">Antes de instalar nada, necesitamos un usuario en el AD para que GCDS pueda leer el directorio.</p>
+            <ul class="param-list">
+                <li>
+                    <span class="param-label">Username</span>
+                    <span class="param-value">svc_gcds</span>
+                </li>
+                <li>
+                    <span class="param-label">Member Of</span>
+                    <span class="param-value" id="step0-member">Domain Users (Lectura es suficiente)</span>
+                </li>
+                <li>
+                    <span class="param-label">Password Options</span>
+                    <span class="param-value" id="step0-opt">"User cannot change password" + "Password never expires" (CRÍTICO)</span>
+                </li>
+            </ul>
+            <img src="img/ad-svc-account.png" alt="AD Service Account Options" class="step-img">
+        </div>
+
+        <div class="step-card">
+            <span class="step-number">STEP 01</span>
+            <h3 id="step1-title">Google Domain Configuration</h3>
+            <span class="ui-location">📍 GCDS > Google Domain Configuration > Connection Settings</span>
+            <p id="step1-desc">Conectamos con el inquilino <strong>fergava.es</strong>. La opción <em>"Replace domain names"</em> sirve para cambiar sufijos (ej: @local -> @nube). En este caso, como los usuarios locales ya son idénticos a los de la nube, la dejamos <strong>DESMARCADA</strong>.</p>
+            <ul class="param-list">
+                <li>
+                    <span class="param-label">Primary Domain Name</span>
+                    <span class="param-value">fergava.es</span>
+                </li>
+                <li>
+                    <span class="param-label">Replace domain names</span>
+                    <span class="param-value" id="step1-check">UNCHECKED (No necesario si los UPN coinciden)</span>
+                </li>
+            </ul>
+            <img src="img/gcds-auth.png" alt="GCDS Domain Authorization Screen" class="step-img">
+        </div>
+
+        <div class="step-card" style="border-color: var(--warning-border);">
+            <span class="step-number" style="color: var(--warning-border); border-color: var(--warning-border);">STEP 02</span>
+            <h3 id="step2-title">Exclusiones</h3>
+            <span class="ui-location">📍 GCDS > Google Domain Configuration > Exclusion Rules</span>
+            
+            <div class="warning-box">
+                <div class="warning-title">
+                    <span>⚠</span> <strong id="warn-title">¡Cuidado con el Super Admin!</strong>
+                </div>
+                <p id="warn-desc">
+                    Si no configuras una <strong>Regla de Exclusión</strong> explícita (Type: User Email Address), GCDS borrará tu cuenta de admin porque no existe en el AD.
+                </p>
+            </div>
+
+            <p id="step2-desc" style="margin-bottom: 1rem;">
+                Configuramos una regla para excluir <strong>todo el dominio raíz</strong> (@fergava.es), donde residen los administradores, y así proteger esas cuentas críticas de la nube.
+            </p>
+
+            <ul class="param-list">
+                <li>
+                    <span class="param-label">Type</span>
+                    <span class="param-value">User Email Address</span>
+                </li>
+                <li>
+                    <span class="param-label">Match Type</span>
+                    <span class="param-value">Regular Expression</span>
+                </li>
+                <li>
+                    <span class="param-label">Rule</span>
+                    <span class="param-value">^.+@fergava\.es$</span>
+                    <span class="param-hint" id="step2-regex-hint">(Protege a todos los usuarios @fergava.es)</span>
+                </li>
+            </ul>
+            <img src="img/gcds-exclusions.png" alt="GCDS Exclusion Rules Screen" class="step-img">
+        </div>
+
+        <div class="step-card">
+            <span class="step-number">STEP 03</span>
+            <h3 id="step3-title">LDAP Configuration</h3>
+            <span class="ui-location">📍 GCDS > LDAP Configuration</span>
+            <p id="step3-desc">Configuramos el túnel hacia el DC. Nota: Para usar el puerto 636 (SSL) es obligatorio instalar certificados en el DC previamente. En este laboratorio usamos LDAP estándar.</p>
+            <ul class="param-list">
+                <li>
+                    <span class="param-label">Connection Type</span>
+                    <span class="param-value" id="step3-type">Standard LDAP (Port 389) - ⚠ Texto Plano</span>
+                </li>
+                <li>
+                    <span class="param-label">Host Name</span>
+                    <span class="param-value">192.168.1.2 (DC IP)</span>
+                </li>
+                <li>
+                    <span class="param-label">Authorized User</span>
+                    <span class="param-value" id="step3-user">AD\svc_gcds (Cuenta de servicio creada anteriormente)</span>
+                </li>
+                <li>
+                    <span class="param-label">Base DN</span>
+                    <span class="param-value">DC=ad,DC=fergava,DC=es</span>
+                    <span class="param-hint" id="step3-dn-hint">(Sintaxis: ad.fergava.es ➔ DC=ad,DC=fergava,DC=es)</span>
+                </li>
+            </ul>
+            <img src="img/gcds-ldap.png" alt="GCDS LDAP Configuration Screen" class="step-img">
+        </div>
+
+        <div class="step-card">
+            <span class="step-number">STEP 04</span>
+            <h3 id="step4-title">General Settings</h3>
+            <span class="ui-location">📍 GCDS > General Settings</span>
+            
+            <p id="step4-desc">
+                Este es el "panel de control" donde decidimos qué módulos activar. Al marcar una casilla aquí, se habilitan las pestañas correspondientes en el menú izquierdo.
+            </p>
+
+            <ul class="param-list">
+                <li>
+                    <span class="param-label">Organizational Units</span>
+                    <span class="param-value" id="step4-ou">CHECKED (Replicar estructura de carpetas)</span>
+                </li>
+                <li>
+                    <span class="param-label">User Accounts</span>
+                    <span class="param-value" id="step4-users">CHECKED (Sincronizar identidades)</span>
+                </li>
+                <li>
+                    <span class="param-label">Groups</span>
+                    <span class="param-value" id="step4-groups">UNCHECKED (Aún no configurado en este Lab)</span>
+                </li>
+            </ul>
+            <img src="img/gcds-general.png" alt="GCDS General Settings Screen" class="step-img">
+        </div>
+
+        <div class="step-card">
+            <span class="step-number">STEP 05</span>
+            <h3 id="step5-title">Unidades Organizativas (OUs)</h3>
+            <span class="ui-location">📍 GCDS > Organizational Units</span>
+            
+            <p id="step5-desc">
+                Antes de sincronizar usuarios, debemos replicar las carpetas (OUs). Usaremos <strong>Mapeo de Raíz</strong> para simplificar la estructura.
+            </p>
+
+            <h4 class="sub-title"><i class="fa-solid fa-sliders"></i> <span id="step5-attr-title">Atributos de Unidad Organizativa</span></h4>
+            <p style="font-size: 0.9rem; margin-bottom: 10px;" id="step5-root-desc">
+                Usamos una regla única: Mapeamos la raíz del AD (<code>DC=ad...</code>) directamente a la raíz de Google (<code>/</code>). Esto elimina automáticamente la jerarquía del dominio (es/fergava/ad) y deja las OUs limpias.
+            </p>
+            
+            <ul class="param-list">
+                <li>
+                    <span class="param-label">Deletion Policy</span>
+                    <span class="param-value" id="step5-policy">CHECKED: "Don't delete Google organizations not found in LDAP" (Seguridad)</span>
+                </li>
+            </ul>
+
+            <table class="mapping-table">
+                <tr>
+                    <th id="step5-th-ldap">LDAP DN (Origen)</th>
+                    <th id="step5-th-google">Google OU Name (Destino)</th>
+                </tr>
+                <tr style="background: rgba(255,255,255,0.05);">
+                    <td class="dn-text">DC=ad,DC=fergava,DC=es</td>
+                    <td>/</td>
+                </tr>
+            </table>
+            <img src="img/gcds-ou-root-mapping.png" alt="GCDS Root OU Mapping" class="step-img">
+
+            <div class="card-divider"></div>
+
+            <h4 class="sub-title"><i class="fa-solid fa-filter"></i> <span id="step5-rules-title">Reglas de Búsqueda</span></h4>
+            <p id="step5-rules-desc">
+                En lugar de crear una regla por cada carpeta, usamos una <strong>Regla General con Comodín</strong>. Apuntamos a la raíz del dominio y filtramos solo las OUs cuyo nombre empiece por "Gsync".
+            </p>
+            
+            <img src="img/gcds-ou-wildcard.png" alt="GCDS Wildcard OU Search Rule" class="step-img">
+
+            <ul class="param-list" style="margin-top: 1rem;">
+                <li>
+                    <span class="param-label">Base DN</span>
+                    <span class="param-value">DC=ad,DC=fergava,DC=es (Raíz)</span>
+                </li>
+                 <li>
+                    <span class="param-label">Scope</span>
+                    <span class="param-value">Sub-tree (Buscar en profundidad)</span>
+                </li>
+                <li>
+                    <span class="param-label">LDAP Filter (Rule)</span>
+                    <span class="param-value">(name=GSync*)</span>
+                     <div class="tech-box" id="step5-wildcard-expl">
+                        Busca cualquier objeto (que sea una OU) cuyo nombre empiece por "GSync". Es más eficiente y escalable.
+                    </div>
+                </li>
+            </ul>
+
+            <div class="card-divider"></div>
+
+            <h4 class="sub-title"><i class="fa-solid fa-vial"></i> <span id="step5-test-title">Probar la Regla</span></h4>
+            <p id="step5-test-desc">Verificamos que GCDS encuentra correctamente las carpetas con el nuevo filtro.</p>
+            <img src="img/gcds-ou-test.png" alt="GCDS OU Test Result" class="step-img">
+        </div>
+
+        <div class="step-card">
+            <span class="step-number">STEP 06</span>
+            <h3 id="step6-title">Atributos de Usuario (User Attributes)</h3>
+            <span class="ui-location">📍 GCDS > User Accounts > User Attributes</span>
+            
+            <p id="step6-desc">
+                Definimos <strong>qué</strong> atributos de AD se usan para generar el email en Google.
+            </p>
+
+            <ul class="param-list">
+                <li>
+                    <span class="param-label">Email Address Attribute</span>
+                    <span class="param-value">mail</span>
+                    <div class="tech-box" id="step6-email-expl">
+                        <strong>Opción A (Recomendada):</strong> Usar <code>mail</code> si el campo "Email" está relleno en el AD.<br>
+                        <strong>Opción B:</strong> Si "Email" está vacío, usar <code>userPrincipalName</code> (login).
+                    </div>
+                </li>
+                <li>
+                    <span class="param-label">Unique Identifier Attribute</span>
+                    <span class="param-value">objectGUID (Recommended)</span>
+                    <span class="param-hint" id="step6-guid-hint">(Permite renombrar usuarios sin romper el sync)</span>
+                </li>
+            </ul>
+            <img src="img/gcds-attributes.png" alt="GCDS User Attributes Screen" class="step-img">
+
+            <div class="card-divider"></div>
+
+            <h4 class="sub-title"><i class="fa-solid fa-address-card"></i> <span id="step6-add-title">Atributos Adicionales</span></h4>
+            <p id="step6-add-desc" style="margin-bottom: 1rem;">Configuramos el mapeo de nombres para que la Global Address List (GAL) muestre Nombre y Apellidos correctamente.</p>
+
+            <ul class="param-list">
+                <li>
+                    <span class="param-label" id="step6-given-label">Given Name Attribute (Nombre)</span>
+                    <span class="param-value">givenName</span>
+                </li>
+                <li>
+                    <span class="param-label" id="step6-family-label">Family Name Attribute (Apellido)</span>
+                    <span class="param-value">sn</span>
+                </li>
+            </ul>
+            <img src="img/gcds-additional-attributes.png" alt="GCDS Additional Attributes" class="step-img">
+        </div>
+
+        <div class="step-card">
+            <span class="step-number">STEP 07</span>
+            <h3 id="step7-title">Reglas de Usuario (User Rules)</h3>
+            <span class="ui-location">📍 GCDS > User Accounts > Search Rules</span>
+            <p id="step7-desc">Aquí definimos <strong>quién</strong> se sincroniza. Hacemos clic en <em>"Add Search Rule"</em> para especificar nuestras Unidades Organizativas (OUs) de origen. En este laboratorio, sincronizamos dos OUs separadas.</p>
+            
+            <img src="img/gcds-add-rule.png" alt="GCDS Add Search Rule Dialog" class="step-img">
+
+            <ul class="param-list" style="margin-top: 1rem;">
+                <li>
+                    <span class="param-label">Rule 1 (Base DN)</span>
+                    <span class="param-value">OU=Gsync_Ventas,DC=ad,DC=fergava,DC=es</span>
+                </li>
+                <li>
+                    <span class="param-label">Rule 2 (Base DN)</span>
+                    <span class="param-value">OU=Gsync_Sistemas,DC=ad,DC=fergava,DC=es</span>
+                </li>
+                <li>
+                    <span class="param-label">Scope</span>
+                    <span class="param-value">Sub-tree</span>
+                    <div class="tech-box" id="step7-scope-expl">
+                        Busca en la carpeta seleccionada y <strong>en todas las subcarpetas</strong> (recursivo).
+                    </div>
+                </li>
+                <li>
+                    <span class="param-label">LDAP Filter</span>
+                    <span class="param-value">(&(objectCategory=person)(objectClass=user)(mail=*))</span>
+                    <div class="tech-box" id="step7-filter-expl">
+                        <span class="tech-highlight">&</span> = Y (Cumplir todo)<br>
+                        <span class="tech-highlight">person/user</span> = Es un usuario real (no PC/Printer)<br>
+                        <span class="tech-highlight">mail=*</span> = Tiene el campo 'Email' relleno
+                    </div>
+                    <div class="tech-box" id="step7-mail-note" style="margin-top: 10px; border-left: 3px solid #d29922;">
+                        ⚠ <strong>Dependencia:</strong> Este filtro exige que el campo <em>Email</em> exista en el AD. Si estuviera vacío, la regla ignoraría al usuario. (Si no tuviéramos ese campo, usaríamos el UPN en la config de atributos).
+                    </div>
+                </li>
+            </ul>
+
+            <div class="card-divider"></div>
+            <h4 class="sub-title"><i class="fa-solid fa-vial"></i> <span id="step7-test-title">Probar la Regla</span></h4>
+            <p id="step7-test-desc">Antes de guardar, es vital pulsar <strong>"Test LDAP Query"</strong> para confirmar que GCDS ve los usuarios correctos.</p>
+            <img src="img/gcds-test-rule.png" alt="GCDS Test LDAP Query Result" class="step-img">
+        </div>
+
+        <div class="step-card">
+            <span class="step-number">STEP 08</span>
+            <h3 id="step8-title">Configuración de Notificaciones</h3>
+            <span class="ui-location">📍 GCDS > Notifications</span>
+            <p id="step8-desc">Configuramos el envío de logs por correo para monitorizar cada ejecución.</p>
+            
+            <ul class="param-list">
+                <li>
+                    <span class="param-label">SMTP Server</span>
+                    <span class="param-value">smtp.gmail.com</span>
+                </li>
+                <li>
+                    <span class="param-label">Port / Connection</span>
+                    <span class="param-value">587 (TLS)</span>
+                </li>
+                <li>
+                    <span class="param-label">Auth User</span>
+                    <span class="param-value">admin@fergava.es</span>
+                </li>
+                <li>
+                    <span class="param-label">Auth Password</span>
+                    <span class="param-value" id="step8-pass-val">App Password (Requerido si hay 2FA)</span>
+                    <div class="tech-box" id="step8-auth-note">
+                        Nota: No uses tu contraseña de login. Genera una "Contraseña de aplicación" en tu cuenta Google.
+                    </div>
+                </li>
+                <li>
+                    <span class="param-label">To / From</span>
+                    <span class="param-value">admin@fergava.es</span>
+                </li>
+            </ul>
+            <img src="img/gcds-notifications.png" alt="GCDS Notifications Screen" class="step-img">
+        </div>
+
+        <div class="step-card">
+            <span class="step-number">STEP 09</span>
+            <h3 id="step9-title">Sincronización y Simulación</h3>
+            <span class="ui-location">📍 GCDS > Sync</span>
+            
+            <div class="warning-box">
+                <div class="warning-title">
+                    <span>⚠</span> <strong id="step9-prereq-title">Prerrequisito: Todo en Verde</strong>
+                </div>
+                <p id="step9-prereq-desc">
+                    Para acceder a esta pantalla y habilitar los botones, <strong>TODAS</strong> las secciones anteriores del menú lateral deben tener el check verde ✅ de validación. Si falta alguna, revisa los pasos anteriores.
+                </p>
+                <img src="img/gcds-validation.png" alt="GCDS Validation Checks" class="step-img" style="margin-top: 10px;">
+            </div>
+
+            <p id="step9-desc">
+                Verificación final. Antes de aplicar cambios reales, es <strong>obligatorio</strong> ejecutar una simulación para detectar errores catastróficos (como borrados masivos).
+            </p>
+
+            <h4 class="sub-title"><i class="fa-solid fa-play"></i> Simulate Sync</h4>
+            <p id="step9-sim-desc">
+                Pulsamos <strong>"Simulate Sync"</strong>. El sistema analizará diferencias sin tocar nada en Google.
+            </p>
+
+            <img src="img/gcds-sync-sim.png" alt="GCDS Simulation Results" class="step-img">
+
+            <div class="tech-box" id="step9-analysis" style="margin-top: 1rem;">
+                <h4 style="color: #d2a8ff; margin-bottom: 5px;">🔍 Análisis de Resultados</h4>
+                <p>
+                    Como las OUs y usuarios ya existen en ambos lados (y hemos configurado el Mapeo de OUs correctamente), la simulación no debería mostrar creaciones masivas ni borrados.
+                    <br>
+                    Si todo está correcto (Proposed changes: Delete 0), significa que GCDS ha <strong>emparejado (matched)</strong> correctamente los objetos locales con los de la nube.
+                </p>
+            </div>
+
+            <div class="card-divider"></div>
+
+            <h4 class="sub-title"><i class="fa-solid fa-file-export"></i> <span id="step9-apply-title">Aplicar Cambios</span></h4>
+            <p id="step9-apply-desc">
+                Una vez satisfechos con el resultado del test, pulsamos <strong>"Sync & Apply Changes"</strong> para escribir los cambios en Google de forma definitiva.
+            </p>
+        </div>
+
+        <div class="step-card">
+            <span class="step-number">STEP 10</span>
+            <h3 id="step10-title">Automatización</h3>
+            <span class="ui-location">📍 Windows Task Scheduler</span>
+            <p id="step10-desc">Una vez validada la simulación y ejecutada la primera sincronización manual con éxito, creamos la tarea programada.</p>
+            
+            <h4 class="sub-title"><i class="fa-solid fa-save"></i> <span id="step10-save-title">Guardar Configuración</span></h4>
+            <p id="step10-save-desc" style="font-size:0.9rem; margin-bottom:10px;">
+                ¡Importante! Guarda la configuración (File > Save) con un nombre reconocible (ej: <code>config.xml</code>) en una carpeta simple (ej: <code>C:\GCDS\</code>). No uses el nombre por defecto.
+            </p>
+
+            <div class="terminal-window">
+                <div class="terminal-header">Windows PowerShell / CMD</div>
+                <div class="terminal-body"><span class="cmd-line">& "C:\Program Files\Google Cloud Directory Sync\sync-cmd"</span> <span class="cmd-arg">-a -c "C:\GCDS\config.xml"</span></div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer style="text-align: center; padding: 2rem; color: var(--text-secondary); border-top: 1px solid #30363d;">
+        <p>Learning_Path | GCDS Lab</p>
+    </footer>
+
+    <script>
+        const translations = {
+            es: {
+                btnBack: "< ./Volver_al_Panel",
+                pageIntro: "Google Cloud Directory Sync (GCDS) es el puente unidireccional que permite replicar identidades desde tu infraestructura local (Active Directory) hacia Google Workspace.",
+                diagramTitle: "> Data_Flow_Topology",
+                diagramDesc: "Flujo de Sincronización: El servidor GCDS extrae la información del DC, la procesa y empuja los cambios a la API de Google.",
+                archTitle: "ℹ Best Practice: Arquitectura",
+                archDesc: "La herramienta GCDS se ha instalado en un <strong>Servidor Miembro (Member Server)</strong> unido al dominio, separado del Controlador de Dominio (DC) por seguridad y rendimiento.",
+
+                step0Title: "Creación Service Account",
+                step0Loc: "📍 Active Directory Users and Computers",
+                step0Desc: "Antes de instalar nada, necesitamos un usuario en el AD para que GCDS pueda leer el directorio.",
+                step0Member: "Domain Users (Lectura es suficiente)",
+                step0Opt: '"User cannot change password" + "Password never expires" (CRÍTICO)',
+
+                step1Title: "Google Domain Configuration",
+                step1Desc: "Conectamos con el inquilino <strong>fergava.es</strong>. La opción <em>'Replace domain names'</em> sirve para cambiar sufijos (ej: @local -> @nube). En este caso, como los usuarios locales ya son idénticos a los de la nube, la dejamos <strong>DESMARCADA</strong>.",
+                step1Check: "UNCHECKED (No necesario si los UPN coinciden)",
+
+                step2Title: "Exclusiones",
+                warnTitle: "¡Cuidado con el Super Admin!",
+                warnDesc: "Si no configuras una <strong>Regla de Exclusión</strong> explícita (Type: User Email Address), GCDS borrará tu cuenta de admin porque no existe en el AD.",
+                step2Desc: "Configuramos una regla para excluir <strong>todo el dominio raíz</strong> (@fergava.es), donde residen los administradores, y así proteger esas cuentas críticas de la nube.",
+                step2RegexHint: "(Protege a todos los usuarios @fergava.es)",
+
+                step3Title: "LDAP Configuration",
+                step3Desc: "Configuramos el túnel hacia el DC. Nota: Para usar el puerto 636 (SSL) es obligatorio instalar certificados en el DC previamente. En este laboratorio usamos LDAP estándar.",
+                step3Type: "Standard LDAP (Port 389) - ⚠ Texto Plano",
+                step3User: "AD\\svc_gcds (Cuenta de servicio creada anteriormente)",
+                step3DnHint: "(Sintaxis: ad.fergava.es ➔ DC=ad,DC=fergava,DC=es)",
+                
+                step4Title: "General Settings",
+                step4Desc: "Este es el 'panel de control' donde decidimos qué módulos activar. Al marcar una casilla aquí, se habilitan las pestañas correspondientes en el menú izquierdo.",
+                step4Ou: "CHECKED (Replicar estructura de carpetas)",
+                step4Users: "CHECKED (Sincronizar identidades)",
+                step4Groups: "UNCHECKED (Aún no configurado en este Lab)",
+
+                step5Title: "Unidades Organizativas (OUs)",
+                step5Desc: "Antes de sincronizar usuarios, debemos replicar las carpetas (OUs) donde vivirán. Usaremos <strong>Mapeo de Raíz</strong> para simplificar la estructura.",
+                step5AttrTitle: "Atributos de Unidad Organizativa",
+                step5Policy: "CHECKED: 'No borrar organizaciones de Google no encontradas en LDAP' (Seguridad)",
+                step5MappingTitle: "Mapeo de OUs",
+                step5MappingDesc: "Configuramos las reglas de sustitución (Add Rule) en la pestaña Attributes:",
+                step5ThLdap: "LDAP DN (Origen)",
+                step5ThGoogle: "Google OU Name (Destino)",
+                step5SearchNote: "(En la pestaña Search Rules, mantenemos la regla de búsqueda estándar para leer las OUs).",
+                step5RulesTitle: "Reglas de Búsqueda",
+                step5RulesDesc: "En lugar de crear una regla por cada carpeta, usamos una <strong>Regla General con Comodín</strong>. Apuntamos a la raíz del dominio y filtramos solo las OUs cuyo nombre empiece por 'Gsync'.",
+                step5TestTitle: "Probar la Regla",
+                step5TestDesc: "Verificamos que GCDS encuentra correctamente las carpetas con el nuevo filtro.",
+                step5RootDesc: "Usamos una regla única: Mapeamos la raíz del AD (<code>DC=ad...</code>) directamente a la raíz de Google (<code>/</code>). Esto elimina automáticamente la jerarquía del dominio (es/fergava/ad) y deja las OUs limpias.",
+                step5WildcardExpl: "Busca cualquier objeto (que sea una OU) cuyo nombre empiece por 'GSync'. Es más eficiente y escalable.",
+
+                step6Title: "Atributos de Usuario (User Attributes)",
+                step6Desc: "Definimos <strong>qué</strong> atributos de AD se usan para generar el email en Google.",
+                step6EmailExpl: "<strong>Opción A (Recomendada):</strong> Usar <code>mail</code> si el campo 'Email' está relleno en el AD.<br><strong>Opción B:</strong> Si 'Email' está vacío, usar <code>userPrincipalName</code> (login).",
+                step6GuidHint: "(Permite renombrar usuarios sin romper el sync)",
+                step6AddTitle: "Atributos Adicionales",
+                step6AddDesc: "Configuramos el mapeo de nombres para que la Global Address List (GAL) muestre Nombre y Apellidos correctamente.",
+                step6GivenLabel: "Given Name Attribute (Nombre)",
+                step6FamilyLabel: "Family Name Attribute (Apellido)",
+
+                step7Title: "Reglas de Usuario (User Rules)",
+                step7Desc: "Aquí definimos <strong>quién</strong> se sincroniza. Hacemos clic en <em>'Add Search Rule'</em> para especificar nuestras Unidades Organizativas (OUs) de origen. En este laboratorio, sincronizamos dos OUs separadas.",
+                step7ScopeExpl: "Busca en la carpeta seleccionada y <strong>en todas las subcarpetas</strong> (recursivo).",
+                step7FilterExpl: "<span class='tech-highlight'>&</span> = Y (Cumplir todo)<br><span class='tech-highlight'>person/user</span> = Es un usuario real (no PC/Printer)<br><span class='tech-highlight'>mail=*</span> = Tiene el campo 'Email' relleno",
+                step7MailNote: "⚠ <strong>Dependencia:</strong> Este filtro exige que el campo <em>Email</em> exista en el AD. Si estuviera vacío, la regla ignoraría al usuario. (Si no tuviéramos ese campo, usaríamos el UPN en la config de atributos).",
+                step7TestTitle: "Probar la Regla",
+                step7TestDesc: "Antes de guardar, es vital pulsar <strong>'Test LDAP Query'</strong> para confirmar que GCDS ve los usuarios correctos.",
+
+                step8Title: "Configuración de Notificaciones",
+                step8Desc: "Configuramos el envío de logs por correo para monitorizar cada ejecución.",
+                step8AuthNote: "Nota: No uses tu contraseña de login. Genera una 'Contraseña de aplicación' en tu cuenta Google.",
+                step8PassVal: "App Password (Requerido si hay 2FA)",
+
+                step9Title: "Sincronización y Simulación",
+                step9PrereqTitle: "Prerrequisito: Todo en Verde",
+                step9PrereqDesc: "Para acceder a esta pantalla y habilitar los botones, <strong>TODAS</strong> las secciones anteriores del menú lateral deben tener el check verde ✅ de validación. Si falta alguna, revisa los pasos anteriores.",
+                step9Desc: "Verificación final. Antes de aplicar cambios reales, es <strong>obligatorio</strong> ejecutar una simulación para detectar errores catastróficos (como borrados masivos).",
+                step9SimDesc: "Pulsamos <strong>'Simulate Sync'</strong>. El sistema analizará diferencias sin tocar nada en Google.",
+                step9Analysis: "<h4 style='color: #d2a8ff; margin-bottom: 5px;'>🔍 Análisis de Resultados</h4><p>Como las OUs y usuarios ya existen en ambos lados (y hemos configurado el Mapeo de OUs correctamente), la simulación no debería mostrar creaciones masivas ni borrados.<br>Si todo está correcto (Proposed changes: Delete 0), significa que GCDS ha <strong>emparejado (matched)</strong> correctamente los objetos locales con los de la nube.</p>",
+                step9ApplyTitle: "Aplicar Cambios",
+                step9ApplyDesc: "Una vez satisfechos con el resultado del test, pulsamos <strong>'Sync & Apply Changes'</strong> para escribir los cambios en Google de forma definitiva.",
+
+                step10Title: "Automatización",
+                step10Desc: "Una vez validada la simulación y ejecutada la primera sincronización manual con éxito, creamos la tarea programada.",
+                step10SaveTitle: "Guardar Configuración",
+                step10SaveDesc: "¡Importante! Guarda la configuración (File > Save) con un nombre reconocible (ej: <code>config.xml</code>) en una carpeta simple (ej: <code>C:\\GCDS\\</code>). No uses el nombre por defecto."
+            },
+            en: {
+                btnBack: "< ./Back_to_Panel",
+                pageIntro: "Google Cloud Directory Sync (GCDS) is the one-way bridge that replicates identities from your local infrastructure (Active Directory) to Google Workspace.",
+                diagramTitle: "> Data_Flow_Topology",
+                diagramDesc: "Sync Flow: The GCDS server extracts data from the DC, processes it, and pushes changes to the Google API.",
+                archTitle: "ℹ Best Practice: Architecture",
+                archDesc: "The GCDS tool has been installed on a domain-joined <strong>Member Server</strong>, separate from the Domain Controller (DC) for security and performance.",
+
+                step0Title: "Service Account Creation",
+                step0Loc: "📍 Active Directory Users and Computers",
+                step0Desc: "Before installing anything, we need an AD user so GCDS can read the directory.",
+                step0Member: "Domain Users (Read access is sufficient)",
+                step0Opt: '"User cannot change password" + "Password never expires" (CRITICAL)',
+
+                step1Title: "Google Domain Configuration",
+                step1Desc: "We connect to the <strong>fergava.es</strong> tenant. The <em>'Replace domain names'</em> option is for changing suffixes (e.g., @local -> @cloud). In this case, since local users match cloud users, we leave it <strong>UNCHECKED</strong>.",
+                step1Check: "UNCHECKED (Not needed if UPNs match)",
+
+                step2Title: "Exclusions",
+                warnTitle: "Watch out for the Super Admin!",
+                warnDesc: "If you don't configure an explicit <strong>Exclusion Rule</strong> (Type: User Email Address), GCDS will delete your admin account because it doesn't exist in AD.",
+                step2Desc: "We configure a rule to exclude the <strong>entire root domain</strong> (@fergava.es), where admins reside, protecting those critical cloud accounts.",
+                step2RegexHint: "(Protects all @fergava.es users)",
+
+                step3Title: "LDAP Configuration",
+                step3Desc: "We configure the tunnel to the DC. Note: To use port 636 (SSL), certificates must be installed on the DC first. In this lab, we use standard LDAP.",
+                step3Type: "Standard LDAP (Port 389) - ⚠ Clear Text",
+                step3User: "AD\\svc_gcds (Service Account created previously)",
+                step3DnHint: "(Syntax: ad.fergava.es ➔ DC=ad,DC=fergava,DC=es)",
+                
+                step4Title: "General Settings",
+                step4Desc: "This is the 'control panel' where we decide which modules to activate. Checking a box here enables the corresponding tabs in the left menu.",
+                step4Ou: "CHECKED (Replicate folder structure)",
+                step4Users: "CHECKED (Sync identities)",
+                step4Groups: "UNCHECKED (Not configured in this Lab yet)",
+
+                step5Title: "Organizational Units (OUs)",
+                step5Desc: "Before syncing users, we must replicate the folders (OUs). We will use <strong>Root Mapping</strong> to simplify the structure.",
+                step5AttrTitle: "Org Unit Attributes",
+                step5Policy: "CHECKED: 'Don't delete Google organizations not found in LDAP' (Safety)",
+                step5MappingTitle: "OU Mappings",
+                step5MappingDesc: "We configure substitution rules (Add Rule) in the Attributes tab:",
+                step5ThLdap: "LDAP DN (Source)",
+                step5ThGoogle: "Google OU Name (Destination)",
+                step5SearchNote: "(In the Search Rules tab, we keep the standard search rule to read the OUs).",
+                step5RulesTitle: "Search Rules",
+                step5RulesDesc: "Instead of creating separate rules for each folder, we use a <strong>Single Wildcard Rule</strong>. We point to the domain root and filter only for OUs whose names start with 'Gsync'.",
+                step5TestTitle: "Testing the Rule",
+                step5TestDesc: "We verify that GCDS correctly finds the folders with the new filter.",
+                step5RootDesc: "We use a single rule: We map the AD root (<code>DC=ad...</code>) directly to the Google root (<code>/</code>). This automatically removes the domain hierarchy (es/fergava/ad) and leaves the OUs clean.",
+                step5WildcardExpl: "Searches for any object (that is an OU) whose name starts with 'GSync'. It is more efficient and scalable.",
+
+                step6Title: "User Attributes",
+                step6Desc: "We define <strong>which</strong> AD attributes are used to generate the email in Google.",
+                step6EmailExpl: "<strong>Option A (Recommended):</strong> Use <code>mail</code> if the 'Email' field is populated in AD.<br><strong>Option B:</strong> If 'Email' is empty, use <code>userPrincipalName</code> (login).",
+                step6GuidHint: "(Allows renaming users without breaking sync)",
+                step6AddTitle: "Additional Attributes",
+                step6AddDesc: "We configure name mapping so the Global Address List (GAL) correctly displays First and Last Names.",
+                step6GivenLabel: "Given Name Attribute (First Name)",
+                step6FamilyLabel: "Family Name Attribute (Last Name)",
+
+                step7Title: "User Rules",
+                step7Desc: "Here we define <strong>who</strong> gets synced. Click <em>'Add Search Rule'</em> to specify your source Organizational Units (OUs). In this lab, we sync two separate OUs.",
+                step7ScopeExpl: "Searches in the selected folder and <strong>all subfolders</strong> (recursive).",
+                step7FilterExpl: "<span class='tech-highlight'>&</span> = AND (Must meet all)<br><span class='tech-highlight'>person/user</span> = Is a real user (not PC/Printer)<br><span class='tech-highlight'>mail=*</span> = Has the 'Email' field populated",
+                step7MailNote: "⚠ <strong>Dependency:</strong> This filter requires the <em>Email</em> field to exist in AD. If empty, the rule would ignore the user. (If we lacked this field, we would use the UPN in attribute config instead).",
+                step7TestTitle: "Testing the Rule",
+                step7TestDesc: "Before saving, it is vital to press <strong>'Test LDAP Query'</strong> to confirm GCDS sees the correct users.",
+
+                step8Title: "Notification Settings",
+                step8Desc: "We configure email logs to monitor each execution.",
+                step8AuthNote: "Note: Do not use your login password. Generate an 'App Password' in your Google account.",
+                step8PassVal: "App Password (Required if 2FA is on)",
+
+                step9Title: "Sync & Simulation",
+                step9PrereqTitle: "Prerequisite: All Green",
+                step9PrereqDesc: "To access this screen and enable the buttons, <strong>ALL</strong> previous sections in the side menu must have the green checkmark ✅. If one is missing, check the previous steps.",
+                step9Desc: "Final verification. Before applying real changes, it is <strong>mandatory</strong> to run a simulation to detect catastrophic errors (like mass deletions).",
+                step9SimDesc: "We press <strong>'Simulate Sync'</strong>. The system will analyze differences without touching anything in Google.",
+                step9Analysis: "<h4 style='color: #d2a8ff; margin-bottom: 5px;'>🔍 Result Analysis</h4><p>Since OUs and users already exist on both sides (and we have correctly configured the OU Mapping), the simulation should not show massive creations or deletions.<br>If everything is correct (Proposed changes: Delete 0), it means that GCDS has successfully <strong>matched</strong> the local objects with the cloud ones.</p>",
+                step9ApplyTitle: "Apply Changes",
+                step9ApplyDesc: "Once satisfied with the test result, click <strong>'Sync & Apply Changes'</strong> to write the changes to Google.",
+
+                step10Title: "Automation",
+                step10Desc: "Once the simulation is validated and the first manual sync is successful, we create the scheduled task.",
+                step10SaveTitle: "Save Configuration",
+                step10SaveDesc: "Important! Save the configuration (File > Save) with a recognizable name (e.g., <code>config.xml</code>) in a simple folder (e.g., <code>C:\\GCDS\\</code>). Do not use the default name."
+            },
+            de: {
+                btnBack: "< ./Zurück_zum_Panel",
+                pageIntro: "Google Cloud Directory Sync (GCDS) ist die Einwegbrücke, die Identitäten von Ihrer lokalen Infrastruktur (Active Directory) zu Google Workspace repliziert.",
+                diagramTitle: "> Data_Flow_Topologie",
+                diagramDesc: "Sync-Fluss: Der GCDS-Server extrahiert Daten vom DC, verarbeitet sie und überträgt Änderungen an die Google-API.",
+                archTitle: "ℹ Best Practice: Architektur",
+                archDesc: "Das GCDS-Tool wurde auf einem <strong>Member Server</strong> installiert, getrennt vom Domain Controller (DC) aus Sicherheits- und Leistungsgründen.",
+
+                step0Title: "Erstellung des Servicekontos",
+                step0Loc: "📍 Active Directory Users and Computers",
+                step0Desc: "Vor der Installation benötigen wir einen AD-Benutzer, damit GCDS das Verzeichnis lesen kann.",
+                step0Member: "Domain Users (Lesezugriff ist ausreichend)",
+                step0Opt: '"User cannot change password" + "Password never expires" (KRITISCH)',
+
+                step1Title: "Google Domain Configuration",
+                step1Desc: "Wir verbinden uns mit dem Tenant <strong>fergava.es</strong>. Die Option <em>'Replace domain names'</em> dient zum Ändern von Suffixen (z. B. @lokal -> @cloud). Da die lokalen Benutzer bereits mit den Cloud-Benutzern übereinstimmen, lassen wir dies <strong>DEAKTIVIERT</strong>.",
+                step1Check: "UNCHECKED (Nicht erforderlich, wenn UPNs übereinstimmen)",
+
+                step2Title: "Ausschlüsse",
+                warnTitle: "Vorsicht beim Super Admin!",
+                warnDesc: "Wenn Sie keine explizite <strong>Ausschlussregel</strong> konfigurieren, löscht GCDS Ihr Admin-Konto, da es im AD nicht existiert.",
+                step2Desc: "Wir konfigurieren eine Regel, um die <strong>gesamte Root-Domain</strong> (@fergava.es) auszuschließen (wo Administratoren residieren), um diese kritischen Cloud-Konten zu schützen.",
+                step2RegexHint: "(Schützt alle @fergava.es Benutzer)",
+
+                step3Title: "LDAP Configuration",
+                step3Desc: "Wir konfigurieren den Tunnel zum DC. Hinweis: Um Port 636 (SSL) zu verwenden, müssen zuerst Zertifikate auf dem DC installiert werden. In diesem Labor verwenden wir Standard-LDAP.",
+                step3Type: "Standard LDAP (Port 389) - ⚠ Klartext",
+                step3User: "AD\\svc_gcds (Zuvor erstelltes Servicekonto)",
+                step3DnHint: "(Syntax: ad.fergava.es ➔ DC=ad,DC=fergava,DC=es)",
+                
+                step4Title: "Allgemeine Einstellungen",
+                step4Desc: "Dies ist das 'Kontrollzentrum', in dem wir entscheiden, welche Module aktiviert werden sollen. Das Ankreuzen eines Kästchens aktiviert die entsprechenden Registerkarten im linken Menü.",
+                step4Ou: "CHECKED (Ordnerstruktur replizieren)",
+                step4Users: "CHECKED (Identitäten synchronisieren)",
+                step4Groups: "UNCHECKED (In diesem Lab noch nicht konfiguriert)",
+
+                step5Title: "Organisationseinheiten (OUs)",
+                step5Desc: "Bevor wir Benutzer synchronisieren, müssen wir die Ordner (OUs) replizieren. Wir verwenden <strong>Root Mapping</strong>, um die Struktur zu vereinfachen.",
+                step5AttrTitle: "Attribute der Organisationseinheit",
+                step5Policy: "CHECKED: 'Google-Organisationen nicht löschen, wenn sie nicht im LDAP gefunden werden' (Sicherheit)",
+                step5MappingTitle: "OU-Mappings",
+                step5MappingDesc: "Wir konfigurieren Ersetzungsregeln (Add Rule) auf der Registerkarte Attribute:",
+                step5ThLdap: "LDAP DN (Quelle)",
+                step5ThGoogle: "Google OU Name (Ziel)",
+                step5SearchNote: "(Auf der Registerkarte Suchregeln behalten wir die Standard-Suchregel bei, um die OUs zu lesen).",
+                step5RulesTitle: "Suchregeln",
+                step5RulesDesc: "Anstatt separate Regeln für jeden Ordner zu erstellen, verwenden wir eine **einzelne Wildcard-Regel**. Wir zeigen auf die Domänenwurzel und filtern nur nach OUs, deren Namen mit 'Gsync' beginnen.",
+                step5TestTitle: "Testen der Regel",
+                step5TestDesc: "Wir überprüfen, ob GCDS die Ordner mit dem neuen Filter korrekt findet.",
+                step5RootDesc: "Wir verwenden eine einzige Regel: Wir mappen das AD-Stammverzeichnis (<code>DC=ad...</code>) direkt auf das Google-Stammverzeichnis (<code>/</code>). Dies entfernt automatisch die Domänenhierarchie (es/fergava/ad) und hinterlässt saubere OUs.",
+                step5WildcardExpl: "Sucht nach jedem Objekt (das eine OU ist), dessen Name mit 'GSync' beginnt. Es ist effizienter und skalierbarer.",
+
+                step6Title: "Benutzerattribute",
+                step6Desc: "Wir definieren, <strong>welche</strong> AD-Attribute verwendet werden, um die E-Mail in Google zu generieren.",
+                step6EmailExpl: "<strong>Option A (Empfohlen):</strong> Verwenden Sie <code>mail</code>, wenn das Feld 'E-Mail' im AD ausgefüllt ist.<br><strong>Option B:</strong> Wenn 'E-Mail' leer ist, verwenden Sie <code>userPrincipalName</code> (Login).",
+                step6GuidHint: "(Ermöglicht das Umbenennen von Benutzern ohne Sync-Abbruch)",
+                step6AddTitle: "Zusätzliche Attribute",
+                step6AddDesc: "Wir konfigurieren die Namenszuordnung, damit die Globale Adressliste (GAL) Vor- und Nachnamen korrekt anzeigt.",
+                step6GivenLabel: "Given Name Attribute (Vorname)",
+                step6FamilyLabel: "Family Name Attribute (Nachname)",
+
+                step7Title: "Benutzerregeln",
+                step7Desc: "Hier definieren wir, <strong>wer</strong> synchronisiert wird. Klicken Sie auf <em>'Add Search Rule'</em>, um Ihre Quell-Organisationseinheiten (OUs) anzugeben.",
+                step7ScopeExpl: "Sucht im ausgewählten Ordner und <strong>allen Unterordnern</strong> (rekursiv).",
+                step7FilterExpl: "<span class='tech-highlight'>&</span> = UND (Muss alles erfüllen)<br><span class='tech-highlight'>person/user</span> = Ist ein echter Benutzer<br><span class='tech-highlight'>mail=*</span> = Hat das Feld 'E-Mail' ausgefüllt",
+                step7MailNote: "⚠ <strong>Abhängigkeit:</strong> Dieser Filter erfordert, dass das Feld <em>E-Mail</em> im AD existiert. Wenn leer, würde die Regel den Benutzer ignorieren. (Wenn wir dieses Feld nicht hätten, würden wir stattdessen den UPN in der Attributkonfiguration verwenden).",
+                step7TestTitle: "Testen der Regel",
+                step7TestDesc: "Vor dem Speichern ist es wichtig, <strong>'Test LDAP Query'</strong> zu drücken, um zu bestätigen, dass GCDS die richtigen Benutzer sieht.",
+
+                step8Title: "Benachrichtigungseinstellungen",
+                step8Desc: "Wir konfigurieren E-Mail-Protokolle, um jede Ausführung zu überwachen.",
+                step8AuthNote: "Hinweis: Verwenden Sie nicht Ihr Login-Passwort. Generieren Sie ein 'App-Passwort' in Ihrem Google-Konto.",
+                step8PassVal: "App-Passwort (Erforderlich bei 2FA)",
+
+                step9Title: "Synchronisation und Simulation",
+                step9PrereqTitle: "Voraussetzung: Alles Grün",
+                step9PrereqDesc: "Um auf diesen Bildschirm zuzugreifen und die Schaltflächen zu aktivieren, müssen <strong>ALLE</strong> vorherigen Abschnitte im Seitenmenü das grüne Häkchen ✅ haben. Wenn eines fehlt, überprüfen Sie die vorherigen Schritte.",
+                step9Desc: "Abschließende Überprüfung. Vor dem Anwenden realer Änderungen ist es <strong>zwingend erforderlich</strong>, eine Simulation durchzuführen, um katastrophale Fehler (wie Massenlöschungen) zu erkennen.",
+                step9SimDesc: "Wir drücken <strong>'Simulate Sync'</strong>. Das System analysiert Unterschiede, ohne etwas in Google zu ändern.",
+                step9Analysis: "<h4 style='color: #d2a8ff; margin-bottom: 5px;'>🔍 Ergebnisanalyse</h4><p>Da OUs und Benutzer bereits auf beiden Seiten existieren (und wir das OU-Mapping korrekt konfiguriert haben), sollte die Simulation keine massiven Erstellungen oder Löschungen anzeigen.<br>Wenn alles korrekt ist (Vorgeschlagene Änderungen: Löschen 0), bedeutet dies, dass GCDS die lokalen Objekte erfolgreich mit den Cloud-Objekten <strong>abgeglichen (matched)</strong> hat.</p>",
+                step9ApplyTitle: "Änderungen anwenden",
+                step9ApplyDesc: "Sobald wir mit dem Testergebnis zufrieden sind, klicken wir auf <strong>'Sync & Apply Changes'</strong>, um die Änderungen endgültig in Google zu schreiben.",
+
+                step10Title: "Automatisierung",
+                step10Desc: "Sobald die Simulation validiert ist und die erste manuelle Synchronisierung erfolgreich war, erstellen wir die geplante Aufgabe.",
+                step10SaveTitle: "Konfiguration speichern",
+                step10SaveDesc: "Wichtig! Speichern Sie die Konfiguration (Datei > Speichern) unter einem erkennbaren Namen (z. B. <code>config.xml</code>) in einem einfachen Ordner (z. B. <code>C:\\GCDS\\</code>). Verwenden Sie nicht den Standardnamen."
+            }
+        };
+
+        function safeEdit(id, text) {
+            const element = document.getElementById(id);
+            if (element) element.innerHTML = text;
+        }
+
+        function setLanguage(lang) {
+            safeEdit('btn-back', translations[lang].btnBack);
+            safeEdit('page-intro', translations[lang].pageIntro);
+            safeEdit('diagram-title', translations[lang].diagramTitle);
+            safeEdit('diagram-desc', translations[lang].diagramDesc);
+            safeEdit('arch-title', translations[lang].archTitle);
+            safeEdit('arch-desc', translations[lang].archDesc);
+
+            safeEdit('step0-title', translations[lang].step0Title);
+            safeEdit('step0-loc', translations[lang].step0Loc);
+            safeEdit('step0-desc', translations[lang].step0Desc);
+            safeEdit('step0-member', translations[lang].step0Member); 
+            safeEdit('step0-opt', translations[lang].step0Opt);       
+
+            safeEdit('step1-title', translations[lang].step1Title);
+            safeEdit('step1-desc', translations[lang].step1Desc);
+            safeEdit('step1-check', translations[lang].step1Check);
+
+            safeEdit('step2-title', translations[lang].step2Title); 
+            safeEdit('warn-title', translations[lang].warnTitle);
+            safeEdit('warn-desc', translations[lang].warnDesc);
+            safeEdit('step2-desc', translations[lang].step2Desc);
+            safeEdit('step2-regex-hint', translations[lang].step2RegexHint);
+
+            safeEdit('step3-title', translations[lang].step3Title); 
+            safeEdit('step3-desc', translations[lang].step3Desc);
+            safeEdit('step3-type', translations[lang].step3Type); 
+            safeEdit('step3-user', translations[lang].step3User); 
+            safeEdit('step3-dn-hint', translations[lang].step3DnHint); 
+            
+            safeEdit('step4-title', translations[lang].step4Title); 
+            safeEdit('step4-desc', translations[lang].step4Desc);
+            safeEdit('step4-ou', translations[lang].step4Ou);         
+            safeEdit('step4-users', translations[lang].step4Users);   
+            safeEdit('step4-groups', translations[lang].step4Groups); 
+
+            safeEdit('step5-title', translations[lang].step5Title); 
+            safeEdit('step5-desc', translations[lang].step5Desc);
+            safeEdit('step5-attr-title', translations[lang].step5AttrTitle); 
+            safeEdit('step5-policy', translations[lang].step5Policy);
+            safeEdit('step5-mapping-title', translations[lang].step5MappingTitle); 
+            safeEdit('step5-mapping-desc', translations[lang].step5MappingDesc);
+            safeEdit('step5-th-ldap', translations[lang].step5ThLdap);     // Corrección
+            safeEdit('step5-th-google', translations[lang].step5ThGoogle); // Corrección
+            safeEdit('step5-search-note', translations[lang].step5SearchNote);     
+            safeEdit('step5-rules-title', translations[lang].step5RulesTitle);     
+            safeEdit('step5-rules-desc', translations[lang].step5RulesDesc);       
+            safeEdit('step5-test-title', translations[lang].step5TestTitle);       
+            safeEdit('step5-test-desc', translations[lang].step5TestDesc);
+            safeEdit('step5-root-desc', translations[lang].step5RootDesc); 
+            safeEdit('step5-wildcard-expl', translations[lang].step5WildcardExpl); 
+
+            safeEdit('step6-title', translations[lang].step6Title); 
+            safeEdit('step6-desc', translations[lang].step6Desc);
+            safeEdit('step6-email-expl', translations[lang].step6EmailExpl); 
+            safeEdit('step6-guid-hint', translations[lang].step6GuidHint); 
+            safeEdit('step6-add-title', translations[lang].step6AddTitle); 
+            safeEdit('step6-add-desc', translations[lang].step6AddDesc);
+            safeEdit('step6-given-label', translations[lang].step6GivenLabel); 
+            safeEdit('step6-family-label', translations[lang].step6FamilyLabel);    
+
+            safeEdit('step7-title', translations[lang].step7Title); 
+            safeEdit('step7-desc', translations[lang].step7Desc);
+            safeEdit('step7-scope-expl', translations[lang].step7ScopeExpl); 
+            safeEdit('step7-filter-expl', translations[lang].step7FilterExpl); 
+            safeEdit('step7-mail-note', translations[lang].step7MailNote);
+            safeEdit('step7-test-title', translations[lang].step7TestTitle); 
+            safeEdit('step7-test-desc', translations[lang].step7TestDesc); 
+            
+            safeEdit('step8-title', translations[lang].step8Title); 
+            safeEdit('step8-desc', translations[lang].step8Desc);   
+            safeEdit('step8-auth-note', translations[lang].step8AuthNote); 
+            safeEdit('step8-pass-val', translations[lang].step8PassVal); 
+
+            safeEdit('step9-title', translations[lang].step9Title);
+            safeEdit('step9-desc', translations[lang].step9Desc);
+            safeEdit('step9-prereq-title', translations[lang].step9PrereqTitle); 
+            safeEdit('step9-prereq-desc', translations[lang].step9PrereqDesc);   
+            safeEdit('step9-sim-desc', translations[lang].step9SimDesc);
+            safeEdit('step9-analysis', translations[lang].step9Analysis); 
+            safeEdit('step9-apply-title', translations[lang].step9ApplyTitle); 
+            safeEdit('step9-apply-desc', translations[lang].step9ApplyDesc);   
+
+            safeEdit('step10-title', translations[lang].step10Title);
+            safeEdit('step10-desc', translations[lang].step10Desc);
+            safeEdit('step10-save-title', translations[lang].step10SaveTitle); 
+            safeEdit('step10-save-desc', translations[lang].step10SaveDesc);   
+
+            document.documentElement.lang = lang;
+            localStorage.setItem('selectedLang', lang);
+            updateActiveButton(lang);
+        }
+
+        function updateActiveButton(lang) {
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            const btn = document.getElementById('btn-' + lang);
+            if (btn) btn.classList.add('active');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('selectedLang');
+            if (savedLang) {
+                setLanguage(savedLang);
+            } else {
+                updateActiveButton('es');
+            }
+        });
+    </script>
+</body>
+</html>
