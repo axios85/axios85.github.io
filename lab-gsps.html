@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Config: GSPS | Learning_Path</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-color: #0a0b10;
+            --card-bg: #161b22;
+            --accent-color: #00f0ff;
+            --sync-color: #d2a8ff; /* Restaurado al color violeta de GCDS */
+            --warning-bg: rgba(210, 153, 34, 0.15);
+            --warning-border: #d29922;
+            --text-primary: #e6e6e6;
+            --text-secondary: #8b949e;
+            --terminal-bg: #0d1117;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, .code-font, .lang-btn { font-family: 'Fira Code', monospace; }
+
+        /* HEADER */
+        header {
+            padding: 0 5%;
+            background: rgba(10, 11, 16, 0.98);
+            border-bottom: 1px solid #30363d;
+            position: sticky; top: 0; z-index: 1000; height: 80px;
+            display: flex; align-items: center;
+        }
+
+        .back-btn {
+            text-decoration: none; color: var(--accent-color); font-weight: 600;
+            display: flex; align-items: center; gap: 10px; transition: transform 0.2s;
+            font-family: 'Fira Code', monospace;
+        }
+        .back-btn:hover { transform: translateX(-5px); }
+
+        /* IDIOMAS */
+        .lang-selector { 
+            position: fixed; top: 25px; right: 5%; z-index: 99999;
+            display: flex; gap: 8px;
+        }
+        .lang-btn {
+            background-color: transparent; border: 1px solid #30363d;
+            color: var(--text-secondary); cursor: pointer; font-size: 0.85rem;
+            padding: 6px 10px; border-radius: 4px; font-weight: 600; transition: all 0.2s ease;
+        }
+        .lang-btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
+        .lang-btn.active {
+            background-color: rgba(0, 240, 255, 0.1); border-color: var(--accent-color);
+            color: var(--accent-color); box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        }
+
+        /* CONTENIDO */
+        .container { max-width: 1000px; margin: 0 auto; padding: 3rem 1rem; }
+        .intro-box { margin-bottom: 3rem; }
+        .intro-box h1 { font-size: 2.2rem; margin-bottom: 1rem; color: var(--sync-color); }
+        
+        /* DIAGRAMA ESPECIAL PARA PASSWORD SYNC */
+        .network-diagram {
+            background: #ffffff; border-radius: 12px; padding: 3rem 1rem; margin: 2rem 0;
+            display: flex; justify-content: center; align-items: center; gap: 15px;
+            border: 1px solid #30363d; flex-wrap: wrap;
+        }
+        .net-node {
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            color: #333; min-width: 140px; position: relative;
+        }
+        .net-icon { font-size: 3.5rem; margin-bottom: 1rem; color: #0f172a; }
+        .net-icon.google { color: #ea4335; }
+        .net-label { font-weight: bold; font-size: 1rem; margin-bottom: 0.2rem; }
+        .net-sub { font-size: 0.75rem; color: #666; font-family: 'Fira Code', monospace; }
+        
+        .dll-badge {
+            position: absolute; top: 0; right: 20px; background: #d29922; color: #fff;
+            font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: bold;
+        }
+
+        .arrow-line {
+            flex: 1; height: 2px; background: #333; position: relative; margin: 0 10px; max-width: 150px;
+        }
+        .arrow-line::after {
+            content: ''; position: absolute; right: 0; top: -4px;
+            border-left: 8px solid #333; border-top: 5px solid transparent; border-bottom: 5px solid transparent;
+        }
+        .arrow-text {
+            position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+            font-size: 0.7rem; white-space: nowrap; color: #555; font-weight: bold;
+        }
+
+        /* TARJETAS */
+        .step-card {
+            background: var(--card-bg); border: 1px solid #30363d; border-radius: 8px;
+            padding: 1.5rem; margin-bottom: 2rem; position: relative;
+        }
+        .step-number {
+            position: absolute; top: -15px; left: 20px;
+            background: var(--bg-color); border: 1px solid var(--accent-color); color: var(--accent-color);
+            padding: 2px 10px; font-family: 'Fira Code', monospace; font-size: 0.9rem; border-radius: 4px;
+        }
+        .step-card h3 { margin-top: 0.5rem; margin-bottom: 1rem; color: #fff; }
+        
+        .ui-location {
+            display: inline-block; background: #21262d; color: var(--text-secondary);
+            font-size: 0.8rem; padding: 2px 8px; border-radius: 4px; margin-bottom: 1rem;
+            border: 1px solid #30363d; font-family: 'Fira Code', monospace;
+        }
+
+        .step-img {
+            max-width: 100%; width: auto; height: auto;
+            border-radius: 4px; border: 1px solid #30363d; margin-top: 1rem; display: block;
+        }
+
+        .param-list { list-style: none; margin-left: 0; }
+        .param-list li {
+            margin-bottom: 0.8rem; border-bottom: 1px solid #21262d; padding-bottom: 0.5rem;
+            display: flex; flex-direction: column;
+        }
+        .param-label { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 2px; }
+        .param-value { color: var(--accent-color); font-family: 'Fira Code', monospace; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 4px; width: fit-content;}
+        
+        .tech-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px; border-radius: 4px; margin-top: 5px; font-size: 0.85rem; color: #ccc;
+        }
+        .warning-box {
+            background: var(--warning-bg); border: 1px solid var(--warning-border);
+            padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;
+        }
+        .warning-title { color: var(--warning-border); display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem; font-weight: bold; }
+
+        @media (max-width: 768px) {
+            .network-diagram { flex-direction: column; gap: 30px; }
+            .arrow-line { width: 2px; height: 40px; margin: 0 auto; max-width: none; }
+            .arrow-line::after { 
+                top: auto; bottom: -4px; right: -4px; transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="gws-ad-lab.html" class="back-btn" id="btn-back">&lt; ./Volver_al_Panel</a>
+    </header>
+
+    <div class="lang-selector">
+        <button id="btn-es" class="lang-btn active" onclick="setLanguage('es')">ES</button>
+        <button id="btn-en" class="lang-btn" onclick="setLanguage('en')">EN</button>
+        <button id="btn-de" class="lang-btn" onclick="setLanguage('de')">DE</button>
+    </div>
+
+    <main class="container">
+        
+        <div class="intro-box">
+            <h1>GSPS Configuration Lab</h1>
+            <p id="page-intro">Google Cloud Password Sync (GSPS) es el componente encargado de interceptar cambios de contraseña en Windows y enviarlos instantáneamente a Google.</p>
+        </div>
+        
+        <h3 class="code-font" id="diagram-title" style="margin-bottom: 1rem;">> Real_Time_Flow</h3>
+        
+        <div class="network-diagram">
+            <div class="net-node">
+                <i class="fa-solid fa-user net-icon"></i>
+                <div class="net-label">User</div>
+                <div class="net-sub">Ctrl+Alt+Del</div>
+            </div>
+            <div class="arrow-line"><span class="arrow-text">Change PWD</span></div>
+            <div class="net-node">
+                <span class="dll-badge">DLL Hook</span>
+                <i class="fa-brands fa-windows net-icon"></i>
+                <div class="net-label">DC (lsass.exe)</div>
+                <div class="net-sub">GSPS Agent</div>
+            </div>
+            <div class="arrow-line"><span class="arrow-text">HTTPS Push</span></div>
+            <div class="net-node">
+                <i class="fa-solid fa-cloud net-icon google"></i>
+                <div class="net-label">Google</div>
+                <div class="net-sub">API</div>
+            </div>
+        </div>
+
+        <div class="step-card">
+            <span class="step-number">STEP 01</span>
+            <h3 id="step1-title">Instalación: El Corazón del Dominio</h3>
+            <span class="ui-location">📍 Domain Controllers</span>
+            
+            <p id="step1-desc">
+                A diferencia de GCDS que se instala en un servidor miembro, GSPS debe vivir dentro de los Controladores de Dominio.
+            </p>
+
+            <ul class="param-list">
+                <li>
+                    <span class="param-label" id="lbl-where">Dónde instalar</span>
+                    <span class="param-value" id="val-where">TODOS los DCs de Escritura (Read-Write DCs)</span>
+                </li>
+                <li>
+                    <span class="param-label" id="lbl-why">Por qué</span>
+                    <div class="tech-box" id="expl-why">
+                        GSPS instala una DLL que se "engancha" al proceso de seguridad de Windows (<code>lsass.exe</code>). Si un usuario cambia su contraseña en el DC01, pero GSPS solo está en el DC02, Google no se entera.
+                    </div>
+                </li>
+            </ul>
+
+            <div class="warning-box" style="margin-top: 1rem;">
+                <div class="warning-title">⚠ <span id="lbl-reboot">Requisito Obligatorio</span></div>
+                <p id="desc-reboot">Es necesario <strong>REINICIAR</strong> el Controlador de Dominio tras la instalación para cargar la DLL en el sistema.</p>
+            </div>
+        </div>
+
+        <div class="step-card">
+            <span class="step-number">STEP 02</span>
+            <h3 id="step2-title">Autorización (OAuth)</h3>
+            <span class="ui-location">📍 GSPS Configuration Wizard</span>
+            
+            <p id="step2-desc">
+                Vinculamos el servidor con la nube mediante un token OAuth, sin guardar contraseñas de admin en el servidor.
+            </p>
+
+            <ul class="param-list">
+                <li>
+                    <span class="param-label">Auth Account</span>
+                    <span class="param-value">admin@fergava.es</span>
+                </li>
+                <li>
+                    <span class="param-label">Scope</span>
+                    <span class="param-value" id="val-scope">Manage domain users (Gestionar usuarios)</span>
+                </li>
+            </ul>
+            <p style="font-size: 0.85rem; color: #aaa; margin-top: 10px;" id="step2-code-desc">
+                Google generó un Código de Autorización que pegamos en el asistente:
+            </p>
+            <img src="img/gsps-auth.png" alt="GSPS OAuth Authorization" class="step-img">
+        </div>
+
+        <div class="step-card">
+            <span class="step-number">STEP 03</span>
+            <h3 id="step3-title">Configuración de Identidad</h3>
+            <span class="ui-location">📍 GSPS > Attribute Mapping</span>
+            
+            <p id="step3-desc">
+                Le decimos a GSPS cómo saber qué usuario de Windows corresponde a qué usuario de Google.
+            </p>
+
+            <ul class="param-list">
+                <li>
+                    <span class="param-label" id="lbl-mail-attr">Atributo de Correo</span>
+                    <span class="param-value">mail</span>
+                    <div class="tech-box" id="expl-logic">
+                        <strong>Lógica:</strong> Cuando <em>Juan</em> cambia su clave, GSPS mira su campo <code>mail</code> (juan@fergava.es) y manda la nueva clave a esa cuenta exacta en Google.
+                    </div>
+                </li>
+                <li>
+                    <span class="param-label">Base DN Limit</span>
+                    <span class="param-value">OU=Usuarios,DC=ad,DC=fergava,DC=es</span>
+                    <span class="param-hint" id="hint-dn">(Opcional: Limita la escucha a esta OU)</span>
+                </li>
+            </ul>
+            <img src="img/gsps-identity.png" alt="GSPS Attribute Mapping" class="step-img">
+        </div>
+
+        <div class="step-card">
+            <span class="step-number">STEP 04</span>
+            <h3 id="step4-title">El Comportamiento ("Escucha Activa")</h3>
+            <span class="ui-location" id="loc-concept">📍 Concepto Teórico</span>
+            
+            <p id="step4-intro">Esto es lo que más suele confundir: GSPS no funciona como GCDS.</p>
+
+            <div style="display: grid; gap: 15px; grid-template-columns: 1fr; margin-top: 15px;">
+                <div class="tech-box" style="border-left: 3px solid #ff5555;">
+                    <strong id="lbl-nosync">🚫 No hay botón "Sincronizar Ahora"</strong>
+                    <p id="desc-nosync">GSPS no puede leer contraseñas viejas (hashes). No puede hacer una carga masiva inicial.</p>
+                </div>
+                <div class="tech-box" style="border-left: 3px solid var(--accent-color);">
+                    <strong id="lbl-realtime">👂 Interceptación en tiempo real</strong>
+                    <p id="desc-realtime">GSPS se queda "dormido" esperando. Solo se despierta cuando un usuario pulsa <code>Ctrl + Alt + Supr</code> > "Cambiar contraseña".</p>
+                </div>
+                <div class="tech-box" style="border-left: 3px solid var(--sync-color);">
+                    <strong id="lbl-trickle">💧 Efecto "Goteo"</strong>
+                    <p id="desc-trickle">El día de la instalación, nada cambia en Google. Las contraseñas se actualizan una a una a medida que los usuarios caducan sus claves y las renuevan.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer style="text-align: center; padding: 2rem; color: var(--text-secondary); border-top: 1px solid #30363d;">
+        <p>Learning_Path | GSPS Lab</p>
+    </footer>
+
+    <script>
+        const translations = {
+            es: {
+                btnBack: "< ./Volver_al_Panel",
+                pageIntro: "Google Cloud Password Sync (GSPS) es el componente encargado de interceptar cambios de contraseña en Windows y enviarlos instantáneamente a Google.",
+                diagramTitle: "> Flujo_Tiempo_Real",
+                
+                step1Title: "Instalación: El Corazón del Dominio",
+                step1Desc: "A diferencia de GCDS que se instala en un servidor miembro, GSPS debe vivir dentro de los Controladores de Dominio.",
+                lblWhere: "Dónde instalar",
+                valWhere: "TODOS los DCs de Escritura (Read-Write DCs)",
+                lblWhy: "Por qué",
+                explWhy: "GSPS instala una DLL que se 'engancha' al proceso de seguridad de Windows (<code>lsass.exe</code>). Si un usuario cambia su contraseña en el DC01, pero GSPS solo está en el DC02, Google no se entera.",
+                lblReboot: "Requisito Obligatorio",
+                descReboot: "Es necesario <strong>REINICIAR</strong> el Controlador de Dominio tras la instalación para cargar la DLL en el sistema.",
+
+                step2Title: "Autorización (OAuth)",
+                step2Desc: "Vinculamos el servidor con la nube mediante un token OAuth, sin guardar contraseñas de admin en el servidor.",
+                valScope: "Manage domain users (Gestionar usuarios)",
+                step2CodeDesc: "Google generó un Código de Autorización que pegamos en el asistente:",
+
+                step3Title: "Configuración de Identidad",
+                step3Desc: "Le decimos a GSPS cómo saber qué usuario de Windows corresponde a qué usuario de Google.",
+                lblMailAttr: "Atributo de Correo",
+                explLogic: "<strong>Lógica:</strong> Cuando <em>Juan</em> cambia su clave, GSPS mira su campo <code>mail</code> (juan@fergava.es) y manda la nueva clave a esa cuenta exacta en Google.",
+                hintDn: "(Opcional: Limita la escucha a esta OU)",
+
+                step4Title: "El Comportamiento ('Escucha Activa')",
+                locConcept: "📍 Concepto Teórico",
+                step4Intro: "Esto es lo que más suele confundir: GSPS no funciona como GCDS.",
+                lblNosync: "🚫 No hay botón 'Sincronizar Ahora'",
+                descNosync: "GSPS no puede leer contraseñas viejas (hashes). No puede hacer una carga masiva inicial.",
+                lblRealtime: "👂 Interceptación en tiempo real",
+                descRealtime: "GSPS se queda 'dormido' esperando. Solo se despierta cuando un usuario pulsa <code>Ctrl + Alt + Supr</code> > 'Cambiar contraseña'.",
+                lblTrickle: "💧 Efecto 'Goteo'",
+                descTrickle: "El día de la instalación, nada cambia en Google. Las contraseñas se actualizan una a una a medida que los usuarios caducan sus claves y las renuevan."
+            },
+            en: {
+                btnBack: "< ./Back_to_Panel",
+                pageIntro: "Google Cloud Password Sync (GSPS) is the component responsible for intercepting password changes in Windows and sending them instantly to Google.",
+                diagramTitle: "> Real_Time_Flow",
+
+                step1Title: "Installation: The Heart of the Domain",
+                step1Desc: "Unlike GCDS which sits on a member server, GSPS must reside inside the Domain Controllers.",
+                lblWhere: "Where to install",
+                valWhere: "ALL Read-Write DCs",
+                lblWhy: "Why",
+                explWhy: "GSPS installs a DLL that 'hooks' into the Windows security process (<code>lsass.exe</code>). If a user changes their password on DC01, but GSPS is only on DC02, Google won't know.",
+                lblReboot: "Mandatory Requirement",
+                descReboot: "You must <strong>REBOOT</strong> the Domain Controller after installation to load the DLL into the system.",
+
+                step2Title: "Authorization (OAuth)",
+                step2Desc: "We link the server to the cloud using an OAuth token, without saving admin passwords on the server.",
+                valScope: "Manage domain users",
+                step2CodeDesc: "Google generated an Authorization Code that we pasted into the wizard:",
+
+                step3Title: "Identity Configuration",
+                step3Desc: "We tell GSPS how to match a Windows user to a Google user.",
+                lblMailAttr: "Mail Attribute",
+                explLogic: "<strong>Logic:</strong> When <em>Juan</em> changes his password, GSPS looks at his <code>mail</code> field (juan@fergava.es) and sends the new password to that exact account in Google.",
+                hintDn: "(Optional: Limit listening to this OU)",
+
+                step4Title: "Behavior ('Active Listening')",
+                locConcept: "📍 Theoretical Concept",
+                step4Intro: "This is the most confusing part: GSPS does not work like GCDS.",
+                lblNosync: "🚫 No 'Sync Now' button",
+                descNosync: "GSPS cannot read old passwords (hashes). It cannot perform an initial bulk load.",
+                lblRealtime: "👂 Real-time Interception",
+                descRealtime: "GSPS stays 'asleep' waiting. It only wakes up when a user presses <code>Ctrl + Alt + Del</code> > 'Change Password'.",
+                lblTrickle: "💧 'Trickle' Effect",
+                descTrickle: "On installation day, nothing changes in Google. Passwords update one by one as users expire and renew their credentials."
+            },
+            de: {
+                btnBack: "< ./Zurück_zum_Panel",
+                pageIntro: "Google Cloud Password Sync (GSPS) ist die Komponente, die Passwortänderungen in Windows abfängt und sofort an Google sendet.",
+                diagramTitle: "> Echtzeit_Fluss",
+
+                step1Title: "Installation: Das Herz der Domäne",
+                step1Desc: "Im Gegensatz zu GCDS, das auf einem Member-Server installiert wird, muss GSPS auf den Domain Controllern residieren.",
+                lblWhere: "Wo installieren",
+                valWhere: "ALLE Schreib-DCs (Read-Write DCs)",
+                lblWhy: "Warum",
+                explWhy: "GSPS installiert eine DLL, die sich in den Windows-Sicherheitsprozess (<code>lsass.exe</code>) 'einhakt'. Wenn ein Benutzer sein Passwort auf DC01 ändert, GSPS aber nur auf DC02 ist, erfährt Google nichts davon.",
+                lblReboot: "Zwingende Voraussetzung",
+                descReboot: "Der Domain Controller muss nach der Installation <strong>NEU GESTARTET</strong> werden, um die DLL zu laden.",
+
+                step2Title: "Autorisierung (OAuth)",
+                step2Desc: "Wir verbinden den Server über ein OAuth-Token mit der Cloud, ohne Admin-Passwörter auf dem Server zu speichern.",
+                valScope: "Manage domain users (Domänenbenutzer verwalten)",
+                step2CodeDesc: "Google hat einen Autorisierungscode generiert, den wir in den Assistenten eingefügt haben:",
+
+                step3Title: "Identitätskonfiguration",
+                step3Desc: "Wir sagen GSPS, wie ein Windows-Benutzer einem Google-Benutzer zugeordnet wird.",
+                lblMailAttr: "Mail-Attribut",
+                explLogic: "<strong>Logik:</strong> Wenn <em>Juan</em> sein Passwort ändert, schaut GSPS auf sein <code>mail</code>-Feld (juan@fergava.es) und sendet das neue Passwort an genau dieses Konto bei Google.",
+                hintDn: "(Optional: Hören auf diese OU beschränken)",
+
+                step4Title: "Das Verhalten ('Aktives Zuhören')",
+                locConcept: "📍 Theoretisches Konzept",
+                step4Intro: "Das ist oft verwirrend: GSPS funktioniert nicht wie GCDS.",
+                lblNosync: "🚫 Kein 'Jetzt synchronisieren'-Button",
+                descNosync: "GSPS kann keine alten Passwörter (Hashes) lesen. Es kann keinen initialen Massen-Upload durchführen.",
+                lblRealtime: "👂 Echtzeit-Abfangen",
+                descRealtime: "GSPS bleibt 'schlafend'. Es wacht nur auf, wenn ein Benutzer <code>Strg + Alt + Entf</code> > 'Passwort ändern' drückt.",
+                lblTrickle: "💧 'Tröpfchen'-Effekt",
+                descTrickle: "Am Tag der Installation ändert sich bei Google nichts. Passwörter werden einzeln aktualisiert, wenn Benutzer ihre Anmeldeinformationen erneuern."
+            }
+        };
+
+        function safeEdit(id, text) {
+            const element = document.getElementById(id);
+            if (element) element.innerHTML = text;
+        }
+
+        function setLanguage(lang) {
+            safeEdit('btn-back', translations[lang].btnBack);
+            safeEdit('page-intro', translations[lang].pageIntro);
+            safeEdit('diagram-title', translations[lang].diagramTitle);
+
+            safeEdit('step1-title', translations[lang].step1Title);
+            safeEdit('step1-desc', translations[lang].step1Desc);
+            safeEdit('lbl-where', translations[lang].lblWhere);
+            safeEdit('val-where', translations[lang].valWhere);
+            safeEdit('lbl-why', translations[lang].lblWhy);
+            safeEdit('expl-why', translations[lang].explWhy);
+            safeEdit('lbl-reboot', translations[lang].lblReboot);
+            safeEdit('desc-reboot', translations[lang].descReboot);
+
+            safeEdit('step2-title', translations[lang].step2Title);
+            safeEdit('step2-desc', translations[lang].step2Desc);
+            safeEdit('val-scope', translations[lang].valScope);
+            safeEdit('step2-code-desc', translations[lang].step2CodeDesc);
+
+            safeEdit('step3-title', translations[lang].step3Title);
+            safeEdit('step3-desc', translations[lang].step3Desc);
+            safeEdit('lbl-mail-attr', translations[lang].lblMailAttr);
+            safeEdit('expl-logic', translations[lang].explLogic);
+            safeEdit('hint-dn', translations[lang].hintDn);
+
+            safeEdit('step4-title', translations[lang].step4Title);
+            safeEdit('loc-concept', translations[lang].locConcept); // Traducción del span corregido
+            safeEdit('step4-intro', translations[lang].step4Intro);
+            safeEdit('lbl-nosync', translations[lang].lblNosync);
+            safeEdit('desc-nosync', translations[lang].descNosync);
+            safeEdit('lbl-realtime', translations[lang].lblRealtime);
+            safeEdit('desc-realtime', translations[lang].descRealtime);
+            safeEdit('lbl-trickle', translations[lang].lblTrickle);
+            safeEdit('desc-trickle', translations[lang].descTrickle);
+
+            document.documentElement.lang = lang;
+            localStorage.setItem('selectedLang', lang);
+            updateActiveButton(lang);
+        }
+
+        function updateActiveButton(lang) {
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            const btn = document.getElementById('btn-' + lang);
+            if (btn) btn.classList.add('active');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('selectedLang');
+            if (savedLang) {
+                setLanguage(savedLang);
+            } else {
+                updateActiveButton('es');
+            }
+        });
+    </script>
+</body>
+</html>
