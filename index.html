@@ -39,10 +39,25 @@
             z-index: 1000;
         }
 
+        /* --- LOGO CON CURSOR PARPADEANTE --- */
         .brand { 
             font-size: 1.4rem; 
             color: var(--accent-color); 
             font-weight: 600;
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+        }
+
+        /* El guion bajo animado */
+        .brand::after {
+            content: '_';
+            animation: cursorBlink 1s step-end infinite;
+            margin-left: 2px;
+            color: var(--accent-color);
+        }
+
+        @keyframes cursorBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
         }
 
         /* --- SELECTOR FLOTANTE --- */
@@ -72,7 +87,7 @@
             color: var(--accent-color);
         }
 
-        /* CLASE PARA EL IDIOMA ACTIVO (SE QUEDA ENCENDIDO) */
+        /* CLASE PARA EL IDIOMA ACTIVO */
         .lang-btn.active {
             background-color: rgba(0, 240, 255, 0.1);
             border-color: var(--accent-color);
@@ -104,7 +119,7 @@
 <body>
 
     <header>
-        <div class="brand">Learning_Path</div>
+        <div class="brand" id="site-brand">Learning_Path</div>
     </header>
 
     <div class="lang-selector">
@@ -122,16 +137,16 @@
         <div class="container">
             <div class="projects-grid">
                 <article class="project-card">
-                    <span class="tag">INFRAESTRUCTURA</span>
+                    <span class="tag" id="tag-infra">INFRAESTRUCTURA</span>
                     <h3 id="p1-title">Hardware y Montaje</h3>
                     <p id="p1-desc">Hardware de segunda mano, modificaciones y pruebas de rendimiento.</p>
                     <a href="hardware-lab.html" class="btn" id="btn-read-1">Ver Lab ></a>
                 </article>
 
                 <article class="project-card">
-                    <span class="tag">CLOUD & IDENTITY</span>
+                    <span class="tag" id="tag-cloud">CLOUD & IDENTITY</span>
                     <h3 id="p2-title">Integración GWS y Windows AD</h3>
-                    <p id="p2-desc">Integración de Directorio Activo con Google Workspace.</p>
+                    <p id="p2-desc">Integración de Directorio Activo con Google Workspace (GCDS).</p>
                     <a href="gws-ad-lab.html" class="btn" id="btn-read-2">Ver Lab ></a>
                 </article>
             </div>
@@ -145,30 +160,48 @@
     <script>
         const translations = {
             es: {
+                siteBrand: "Learning_Path",
                 heroTitle: "Laboratorios de TI & Redes",
                 heroDesc: "Documentación técnica de laboratorios, despliegues de red e integraciones cloud.",
+                
+                tagInfra: "INFRAESTRUCTURA",
                 p1Title: "Hardware y Montaje",
                 p1Desc: "Hardware de segunda mano, modificaciones y pruebas de rendimiento.",
+                
+                tagCloud: "CLOUD & IDENTITY",
                 p2Title: "Integración GWS y Windows AD",
-                p2Desc: "Integración de Directorio Activo con Google Workspace.",
+                p2Desc: "Integración de Directorio Activo con Google Workspace (GCDS).",
+                
                 btnRead: "Ver Lab >"
             },
             en: {
+                siteBrand: "Learning_Path",
                 heroTitle: "IT & Network Labs",
                 heroDesc: "Technical documentation of labs, network deployments, and cloud integrations.",
+                
+                tagInfra: "INFRASTRUCTURE",
                 p1Title: "Hardware & Assembly",
                 p1Desc: "Second-hand hardware, modifications, and performance benchmarking.",
+                
+                tagCloud: "CLOUD & IDENTITY",
                 p2Title: "GWS & Windows AD Integration",
-                p2Desc: "Active Directory integration with Google Workspace.",
+                p2Desc: "Active Directory integration with Google Workspace (GCDS).",
+                
                 btnRead: "View Lab >"
             },
             de: {
+                siteBrand: "Learning_Path", 
                 heroTitle: "IT & Netzwerk Labore",
                 heroDesc: "Technische Dokumentation von Laboren, Netzwerkimplementierungen und Cloud-Integrationen.",
+                
+                tagInfra: "INFRASTRUKTUR",
                 p1Title: "Hardware & Montage",
                 p1Desc: "Gebrauchte Hardware, Modifikationen und Leistungsbenchmarking.",
+                
+                tagCloud: "CLOUD & IDENTITY",
                 p2Title: "Integration von GWS & Windows AD",
-                p2Desc: "Active Directory-Integration mit Google Workspace.",
+                p2Desc: "Active Directory-Integration mit Google Workspace (GCDS).",
+                
                 btnRead: "Labor ansehen >"
             }
         };
@@ -179,42 +212,42 @@
         }
 
         function setLanguage(lang) {
-            // 1. Cambiar los textos
+            // Header
+            safeEdit('site-brand', translations[lang].siteBrand);
+
+            // Hero
             safeEdit('hero-title', translations[lang].heroTitle);
             safeEdit('hero-desc', translations[lang].heroDesc);
+            
+            // Proyecto 1
+            safeEdit('tag-infra', translations[lang].tagInfra);
             safeEdit('p1-title', translations[lang].p1Title);
             safeEdit('p1-desc', translations[lang].p1Desc);
             safeEdit('btn-read-1', translations[lang].btnRead);
+            
+            // Proyecto 2
+            safeEdit('tag-cloud', translations[lang].tagCloud);
             safeEdit('p2-title', translations[lang].p2Title);
             safeEdit('p2-desc', translations[lang].p2Desc);
             safeEdit('btn-read-2', translations[lang].btnRead);
             
-            // 2. Cambiar etiqueta HTML para SEO
+            // SEO & Storage
             document.documentElement.lang = lang;
-
-            // 3. GUARDAR EN MEMORIA DEL NAVEGADOR
             localStorage.setItem('selectedLang', lang);
-
-            // 4. Actualizar visualmente qué botón está activo
             updateActiveButton(lang);
         }
 
         function updateActiveButton(lang) {
-            // Quitamos la clase 'active' de todos
             document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-            
-            // Se la ponemos solo al que toca
             const btn = document.getElementById('btn-' + lang);
             if (btn) btn.classList.add('active');
         }
 
-        // 5. AL CARGAR LA PÁGINA: Recuperar el idioma guardado
         window.addEventListener('DOMContentLoaded', () => {
             const savedLang = localStorage.getItem('selectedLang');
             if (savedLang) {
-                setLanguage(savedLang); // Si hay uno guardado, úsalo
+                setLanguage(savedLang);
             } else {
-                // Si no hay nada guardado, por defecto marca ES como activo
                 updateActiveButton('es');
             }
         });
