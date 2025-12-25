@@ -387,7 +387,7 @@
                     <th id="step5-th-google">Google OU Name (Destino)</th>
                 </tr>
                 <tr style="background: rgba(255,255,255,0.05);">
-                    <td class="dn-text">DC=ad,DC=fergava,DC=es</td>
+                    <td class="dn-text" id="step5-basedn-root">DC=ad,DC=fergava,DC=es</td>
                     <td>/</td>
                 </tr>
             </table>
@@ -405,11 +405,11 @@
             <ul class="param-list" style="margin-top: 1rem;">
                 <li>
                     <span class="param-label">Base DN</span>
-                    <span class="param-value">DC=ad,DC=fergava,DC=es (Raíz)</span>
+                    <span class="param-value" id="step5-basedn-val">DC=ad,DC=fergava,DC=es (Raíz)</span>
                 </li>
                  <li>
                     <span class="param-label">Scope</span>
-                    <span class="param-value">Sub-tree (Buscar en profundidad)</span>
+                    <span class="param-value" id="step5-scope-val">Sub-tree (Buscar en profundidad)</span>
                 </li>
                 <li>
                     <span class="param-label">LDAP Filter (Rule)</span>
@@ -668,6 +668,8 @@
                 step5TestDesc: "Verificamos que GCDS encuentra correctamente las carpetas con el nuevo filtro.",
                 step5RootDesc: "Usamos una regla única: Mapeamos la raíz del AD (<code>DC=ad...</code>) directamente a la raíz de Google (<code>/</code>). Esto elimina automáticamente la jerarquía del dominio (es/fergava/ad) y deja las OUs limpias.",
                 step5WildcardExpl: "Busca cualquier objeto (que sea una OU) cuyo nombre empiece por 'GSync'. Es más eficiente y escalable.",
+                step5BaseDnVal: "DC=ad,DC=fergava,DC=es (Raíz)",
+                step5ScopeVal: "Sub-tree (Buscar en profundidad)",
 
                 step6Title: "Atributos de Usuario (User Attributes)",
                 step6Desc: "Definimos <strong>qué</strong> atributos de AD se usan para generar el email en Google.",
@@ -756,6 +758,8 @@
                 step5TestDesc: "We verify that GCDS correctly finds the folders with the new filter.",
                 step5RootDesc: "We use a single rule: We map the AD root (<code>DC=ad...</code>) directly to the Google root (<code>/</code>). This automatically removes the domain hierarchy (es/fergava/ad) and leaves the OUs clean.",
                 step5WildcardExpl: "Searches for any object (that is an OU) whose name starts with 'GSync'. It is more efficient and scalable.",
+                step5BaseDnVal: "DC=ad,DC=fergava,DC=es (Root)",
+                step5ScopeVal: "Sub-tree (Recursive search)",
 
                 step6Title: "User Attributes",
                 step6Desc: "We define <strong>which</strong> AD attributes are used to generate the email in Google.",
@@ -844,6 +848,8 @@
                 step5TestDesc: "Wir überprüfen, ob GCDS die Ordner mit dem neuen Filter korrekt findet.",
                 step5RootDesc: "Wir verwenden eine einzige Regel: Wir mappen das AD-Stammverzeichnis (<code>DC=ad...</code>) direkt auf das Google-Stammverzeichnis (<code>/</code>). Dies entfernt automatisch die Domänenhierarchie (es/fergava/ad) und hinterlässt saubere OUs.",
                 step5WildcardExpl: "Sucht nach jedem Objekt (das eine OU ist), dessen Name mit 'GSync' beginnt. Es ist effizienter und skalierbarer.",
+                step5BaseDnVal: "DC=ad,DC=fergava,DC=es (Stamm)",
+                step5ScopeVal: "Sub-tree (Rekursiv)",
 
                 step6Title: "Benutzerattribute",
                 step6Desc: "Wir definieren, <strong>welche</strong> AD-Attribute verwendet werden, um die E-Mail in Google zu generieren.",
@@ -930,15 +936,17 @@
             safeEdit('step5-policy', translations[lang].step5Policy);
             safeEdit('step5-mapping-title', translations[lang].step5MappingTitle); 
             safeEdit('step5-mapping-desc', translations[lang].step5MappingDesc);
-            safeEdit('step5-th-ldap', translations[lang].step5ThLdap);     // Corrección
-            safeEdit('step5-th-google', translations[lang].step5ThGoogle); // Corrección
+            safeEdit('step5-th-ldap', translations[lang].step5ThLdap);     
+            safeEdit('step5-th-google', translations[lang].step5ThGoogle); 
             safeEdit('step5-search-note', translations[lang].step5SearchNote);     
             safeEdit('step5-rules-title', translations[lang].step5RulesTitle);     
             safeEdit('step5-rules-desc', translations[lang].step5RulesDesc);       
             safeEdit('step5-test-title', translations[lang].step5TestTitle);       
             safeEdit('step5-test-desc', translations[lang].step5TestDesc);
             safeEdit('step5-root-desc', translations[lang].step5RootDesc); 
-            safeEdit('step5-wildcard-expl', translations[lang].step5WildcardExpl); 
+            safeEdit('step5-wildcard-expl', translations[lang].step5WildcardExpl);
+            safeEdit('step5-basedn-val', translations[lang].step5BaseDnVal); // Nuevo
+            safeEdit('step5-scope-val', translations[lang].step5ScopeVal); // Nuevo
 
             safeEdit('step6-title', translations[lang].step6Title); 
             safeEdit('step6-desc', translations[lang].step6Desc);
