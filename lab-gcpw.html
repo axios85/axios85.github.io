@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Config: GCPW | Learning_Path</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-color: #0a0b10;
+            --card-bg: #161b22;
+            --accent-color: #00f0ff;
+            --sync-color: #d2a8ff; 
+            --warning-bg: rgba(210, 153, 34, 0.15);
+            --warning-border: #d29922;
+            --text-primary: #e6e6e6;
+            --text-secondary: #8b949e;
+            --terminal-bg: #0d1117;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, .code-font, .lang-btn { font-family: 'Fira Code', monospace; }
+
+        /* HEADER */
+        header {
+            padding: 0 5%;
+            background: rgba(10, 11, 16, 0.98);
+            border-bottom: 1px solid #30363d;
+            position: sticky; top: 0; z-index: 1000; height: 80px;
+            display: flex; align-items: center;
+        }
+
+        .back-btn {
+            text-decoration: none; color: var(--accent-color); font-weight: 600;
+            display: flex; align-items: center; gap: 10px; transition: transform 0.2s;
+            font-family: 'Fira Code', monospace;
+        }
+        .back-btn:hover { transform: translateX(-5px); }
+
+        /* IDIOMAS */
+        .lang-selector { 
+            position: fixed; top: 25px; right: 5%; z-index: 99999;
+            display: flex; gap: 8px;
+        }
+        .lang-btn {
+            background-color: transparent; border: 1px solid #30363d;
+            color: var(--text-secondary); cursor: pointer; font-size: 0.85rem;
+            padding: 6px 10px; border-radius: 4px; font-weight: 600; transition: all 0.2s ease;
+        }
+        .lang-btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
+        .lang-btn.active {
+            background-color: rgba(0, 240, 255, 0.1); border-color: var(--accent-color);
+            color: var(--accent-color); box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        }
+
+        /* CONTENIDO */
+        .container { max-width: 1000px; margin: 0 auto; padding: 3rem 1rem; }
+        .intro-box { margin-bottom: 3rem; }
+        .intro-box h1 { font-size: 2.2rem; margin-bottom: 1rem; color: var(--sync-color); }
+        
+        /* DIAGRAMA GCPW */
+        .network-diagram {
+            background: #ffffff; border-radius: 12px; padding: 3rem 1rem; margin: 2rem 0;
+            display: flex; justify-content: center; align-items: center; gap: 15px;
+            border: 1px solid #30363d; flex-wrap: wrap;
+        }
+        .net-node {
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            color: #333; min-width: 140px; position: relative;
+        }
+        .net-icon { font-size: 3.5rem; margin-bottom: 1rem; color: #0f172a; }
+        .net-icon.win { color: #0078d4; }
+        .net-label { font-weight: bold; font-size: 1rem; margin-bottom: 0.2rem; }
+        .net-sub { font-size: 0.75rem; color: #666; font-family: 'Fira Code', monospace; }
+        
+        .arrow-line {
+            flex: 1; height: 2px; background: #333; position: relative; margin: 0 10px; max-width: 150px;
+        }
+        .arrow-line::after {
+            content: ''; position: absolute; right: 0; top: -4px;
+            border-left: 8px solid #333; border-top: 5px solid transparent; border-bottom: 5px solid transparent;
+        }
+        .arrow-text {
+            position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+            font-size: 0.7rem; white-space: nowrap; color: #555; font-weight: bold;
+        }
+
+        /* TARJETAS */
+        .step-card {
+            background: var(--card-bg); border: 1px solid #30363d; border-radius: 8px;
+            padding: 1.5rem; margin-bottom: 2rem; position: relative;
+        }
+        .step-number {
+            position: absolute; top: -15px; left: 20px;
+            background: var(--bg-color); border: 1px solid var(--sync-color); color: var(--sync-color);
+            padding: 2px 10px; font-family: 'Fira Code', monospace; font-size: 0.9rem; border-radius: 4px;
+        }
+        .step-card h3 { margin-top: 0.5rem; margin-bottom: 1rem; color: #fff; }
+        
+        .ui-location {
+            display: inline-block; background: #21262d; color: var(--text-secondary);
+            font-size: 0.8rem; padding: 2px 8px; border-radius: 4px; margin-bottom: 1rem;
+            border: 1px solid #30363d; font-family: 'Fira Code', monospace;
+        }
+
+        .step-img {
+            max-width: 100%; width: auto; height: auto;
+            border-radius: 4px; border: 1px solid #30363d; margin-top: 1rem; display: block;
+        }
+
+        .param-list { list-style: none; margin-left: 0; }
+        .param-list li {
+            margin-bottom: 0.8rem; border-bottom: 1px solid #21262d; padding-bottom: 0.5rem;
+            display: flex; flex-direction: column;
+        }
+        .param-label { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 2px; }
+        .param-value { color: var(--accent-color); font-family: 'Fira Code', monospace; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 4px; width: fit-content;}
+        .param-hint { font-size: 0.75rem; color: #8b949e; margin-top: 4px; display: block; }
+
+        .tech-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px; border-radius: 4px; margin-top: 5px; font-size: 0.85rem; color: #ccc;
+        }
+        
+        .terminal-window {
+            background-color: var(--terminal-bg); border-radius: 6px;
+            border: 1px solid #30363d; margin-top: 1rem; font-family: 'Fira Code', monospace; font-size: 0.85rem;
+        }
+        .terminal-header {
+            background-color: #161b22; padding: 8px 15px; border-bottom: 1px solid #30363d; color: var(--text-secondary); font-size: 0.75rem;
+        }
+        .terminal-body { padding: 1.5rem; color: #d0d0d0; white-space: pre-wrap; overflow-x: auto; }
+        .cmd-line { color: #fff; }
+        .cmd-arg { color: var(--sync-color); }
+
+        .warning-box {
+            background: var(--warning-bg); border: 1px solid var(--warning-border);
+            padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;
+        }
+        .warning-title { color: var(--warning-border); display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem; font-weight: bold;}
+
+        @media (max-width: 768px) {
+            .network-diagram { flex-direction: column; gap: 30px; }
+            .arrow-line { width: 2px; height: 40px; margin: 0 auto; max-width: none; }
+            .arrow-line::after { 
+                top: auto; bottom: -4px; right: -4px; transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="gws-ad-lab.html" class="back-btn" id="btn-back">&lt; ./Volver_al_Panel</a>
+    </header>
+
+    <div class="lang-selector">
+        <button id="btn-es" class="lang-btn active" onclick="setLanguage('es')">ES</button>
+        <button id="btn-en" class="lang-btn" onclick="setLanguage('en')">EN</button>
+        <button id="btn-de" class="lang-btn" onclick="setLanguage('de')">DE</button>
+    </div>
+
+    <main class="container">
+        
+        <div class="intro-box">
+            <h1>GCPW Configuration Lab</h1>
+            <p id="page-intro">Google Credential Provider for Windows (GCPW) reemplaza la pantalla de inicio de sesión de Windows, permitiendo autenticación SSO segura directamente con Google Workspace.</p>
+        </div>
+        
+        <h3 class="code-font" id="diagram-title" style="margin-bottom: 1rem;">> Auth_Flow_Topology</h3>
+        
+        <div class="network-diagram">
+            <div class="net-node">
+                <i class="fa-brands fa-windows net-icon win"></i>
+                <div class="net-label">Windows PC</div>
+                <div class="net-sub">Lock Screen</div>
+            </div>
+            <div class="arrow-line"><span class="arrow-text">Intercept Auth</span></div>
+            <div class="net-node">
+                <i class="fa-solid fa-key net-icon" style="color: var(--sync-color);"></i>
+                <div class="net-label">GCPW</div>
+                <div class="net-sub">Provider.dll</div>
+            </div>
+            <div class="arrow-line"><span class="arrow-text">Verify Token</span></div>
+            <div class="net-node">
+                <i class="fa-solid fa-cloud net-icon google" style="color: #ea4335;"></i>
+                <div class="net-label">Google</div>
+                <div class="net-sub">Identity</div>
+            </div>
+        </div>
+
+        <div class="step-card">
+            <span class="step-number">STEP 01</span>
+            <h3 id="step1-title">Descarga e Instalación</h3>
+            <span class="ui-location" id="loc-admin">📍 Admin Console > Devices > Mobile & endpoints > Windows settings > GCPW setup</span>
+            
+            <p id="step1-desc">
+                El instalador de GCPW se genera específicamente para el dominio <strong>ad.fergava.es</strong> e incluye un token de inscripción embebido.
+            </p>
+
+            <ul class="param-list">
+                <li>
+                    <span class="param-label" id="lbl-dl-option">Opción de Descarga</span>
+                    <span class="param-value">"Download GCPW 64-bit"</span>
+                </li>
+                <li>
+                    <span class="param-label">Permitted Domains</span>
+                    <span class="param-value">ad.fergava.es</span>
+                    <span class="param-hint" id="hint-permitted">(CRÍTICO: Debes añadir el dominio aquí, o el login fallará)</span>
+                </li>
+                <li>
+                    <span class="param-label" id="lbl-token">Enrollment Token</span>
+                    <span class="param-value" id="val-token-type">Embedded (Automático)</span>
+                    <span class="param-hint" id="hint-token">(No es necesario introducirlo manualmente si se usa el instalador correcto)</span>
+                </li>
+            </ul>
+            <img src="img/gcpw-download.png" alt="GCPW Download Screen" class="step-img">
+        </div>
+
+        <div class="step-card" style="border-color: var(--sync-color);">
+            <span class="step-number">STEP 02</span>
+            <h3 id="step2-title">Configuración del Registro (Vital)</h3>
+            <span class="ui-location">📍 Windows Registry (Regedit)</span>
+            
+            <p id="step2-desc">
+                Por seguridad, GCPW no permite iniciar sesión a nadie por defecto. Debemos "abrir la puerta" explícitamente para nuestro dominio.
+            </p>
+
+            <div class="terminal-window">
+                <div class="terminal-header">Windows PowerShell (Admin)</div>
+                <div class="terminal-body"><span class="cmd-line">New-ItemProperty -Path "HKLM:\Software\Google\GCPW" -Name "domains_allowed_to_login" -Value "ad.fergava.es" -PropertyType String -Force</span></div>
+            </div>
+
+            <ul class="param-list" style="margin-top: 1rem;">
+                <li>
+                    <span class="param-label">Key Path</span>
+                    <span class="param-value">HKEY_LOCAL_MACHINE\Software\Google\GCPW</span>
+                </li>
+                <li>
+                    <span class="param-label">Value Name</span>
+                    <span class="param-value">domains_allowed_to_login</span>
+                </li>
+                <li>
+                    <span class="param-label">Value Data</span>
+                    <span class="param-value">ad.fergava.es</span>
+                    <div class="tech-box" id="expl-domains">
+                        Esto impide que usuarios con cuentas personales (@gmail.com) inicien sesión en los equipos corporativos.
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="step-card">
+            <span class="step-number">STEP 03</span>
+            <h3 id="step3-title">El Primer Inicio de Sesión</h3>
+            <span class="ui-location">📍 Windows Logon Screen</span>
+            
+            <p id="step3-desc">
+                Al reiniciar el equipo, aparece la nueva opción de inicio de sesión.
+            </p>
+
+            <ul class="param-list">
+                <li>
+                    <span class="param-label" id="lbl-action">Acción</span>
+                    <span class="param-value" id="val-action">Clic en "Add Work Account" (Añadir cuenta de trabajo)</span>
+                </li>
+                <li>
+                    <span class="param-label" id="lbl-result">Resultado</span>
+                    <div class="tech-box" id="expl-result">
+                        Aparece la ventana flotante de Google. El usuario introduce sus credenciales de Google Workspace (incluyendo 2FA/MFA).
+                    </div>
+                </li>
+                <li>
+                    <span class="param-label" id="lbl-magic">La Magia (Vinculación)</span>
+                    <div class="tech-box" id="expl-magic">
+                        Si el usuario local de Windows (AD) tiene el mismo email en su atributo <code>mail</code>, GCPW vincula automáticamente ambas cuentas. A partir de ahora, la contraseña de Google abre Windows.
+                    </div>
+                </li>
+            </ul>
+            <img src="img/gcpw-login.png" alt="Windows Login Screen with Google" class="step-img">
+        </div>
+
+        <div class="step-card">
+            <span class="step-number">STEP 04</span>
+            <h3 id="step4-title">Ciclo de Vida de la Contraseña</h3>
+            <span class="ui-location">📍 Conceptual</span>
+            
+            <div class="warning-box">
+                <div class="warning-title">⚠ <span id="warn-pass-title">Regla de Oro: Sincronización</span></div>
+                <p id="warn-pass-desc">
+                    En un entorno híbrido (con AD local), los usuarios deben cambiar su contraseña <strong>SIEMPRE EN WINDOWS</strong> (Ctrl+Alt+Supr). 
+                    <br>GSPS enviará el cambio a Google. Si lo hacen al revés (cambiar en la web de Google), el AD local no se enterará y las contraseñas se desincronizarán.
+                </p>
+            </div>
+
+            <ul class="param-list">
+                <li>
+                    <span class="param-label" id="lbl-q1">¿Qué contraseña se usa?</span>
+                    <span class="param-value" id="val-q1">La de Active Directory (Sincronizada)</span>
+                    <div class="tech-box" id="expl-q1">
+                        GCPW autentica contra Google, pero como la fuente es el AD (sincronizada via GSPS), es efectivamente la contraseña del dominio. Windows actualiza su caché local tras la validación exitosa en nube.
+                    </div>
+                </li>
+                <li>
+                    <span class="param-label" id="lbl-q2">¿Y la primera vez?</span>
+                    <div class="tech-box" id="expl-q2">
+                        Si el usuario ya existía en el PC (AD), Windows pedirá la <strong>contraseña antigua de Windows</strong> una única vez para verificar la identidad y vincular el perfil a Google.
+                    </div>
+                </li>
+                <li>
+                    <span class="param-label" id="lbl-q3">¿Si olvido mi contraseña?</span>
+                    <div class="tech-box" id="expl-q3">
+                        ⚠ <strong>NO RECOMENDADO.</strong> Si se usa "¿Olvidaste tu contraseña?" en la pantalla de bloqueo, se cambia en Google y en este PC, pero <strong>el AD local NO se actualiza</strong>. Esto romperá el acceso a recursos de red (carpetas, impresoras) hasta que se resincronice manualmente.
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+    </main>
+
+    <footer style="text-align: center; padding: 2rem; color: var(--text-secondary); border-top: 1px solid #30363d;">
+        <p>Learning_Path | GCPW Lab</p>
+    </footer>
+
+    <script>
+        const translations = {
+            es: {
+                btnBack: "< ./Volver_al_Panel",
+                pageIntro: "Google Credential Provider for Windows (GCPW) reemplaza la pantalla de inicio de sesión de Windows, permitiendo autenticación SSO segura directamente con Google Workspace.",
+                diagramTitle: "> Auth_Flow_Topology",
+
+                step1Title: "Descarga e Instalación",
+                locAdmin: "📍 Admin Console > Devices > Mobile & endpoints > Windows settings > GCPW setup",
+                step1Desc: "El instalador de GCPW se genera específicamente para el dominio <strong>ad.fergava.es</strong> e incluye un token de inscripción embebido.",
+                lblDlOption: "Opción de Descarga",
+                lblToken: "Enrollment Token",
+                valTokenType: "Embedded (Automático)",
+                hintToken: "(No es necesario introducirlo manualmente si se usa el instalador correcto)",
+                hintPermitted: "(CRÍTICO: Debes añadir el dominio aquí, o el login fallará)",
+
+                step2Title: "Configuración del Registro (Vital)",
+                step2Desc: "Por seguridad, GCPW no permite iniciar sesión a nadie por defecto. Debemos 'abrir la puerta' explícitamente para nuestro dominio.",
+                explDomains: "Esto impide que usuarios con cuentas personales (@gmail.com) inicien sesión en los equipos corporativos.",
+
+                step3Title: "El Primer Inicio de Sesión",
+                step3Desc: "Al reiniciar el equipo, aparece la nueva opción de inicio de sesión.",
+                lblAction: "Acción",
+                valAction: "Clic en 'Add Work Account' (Añadir cuenta de trabajo)",
+                lblResult: "Resultado",
+                explResult: "Aparece la ventana flotante de Google. El usuario introduce sus credenciales de Google Workspace (incluyendo 2FA/MFA).",
+                lblMagic: "La Magia (Vinculación)",
+                explMagic: "Si el usuario local de Windows (AD) tiene el mismo email en su atributo <code>mail</code>, GCPW vincula automáticamente ambas cuentas. A partir de ahora, la contraseña de Google abre Windows.",
+
+                step4Title: "Ciclo de Vida de la Contraseña",
+                warnPassTitle: "Regla de Oro: Sincronización",
+                warnPassDesc: "En un entorno híbrido (con AD local), los usuarios deben cambiar su contraseña <strong>SIEMPRE EN WINDOWS</strong> (Ctrl+Alt+Supr). <br>GSPS enviará el cambio a Google. Si lo hacen al revés (cambiar en la web de Google), el AD local no se enterará y las contraseñas se desincronizarán.",
+                lblQ1: "¿Qué contraseña se usa?",
+                valQ1: "La de Active Directory (Sincronizada)",
+                explQ1: "GCPW autentica contra Google, pero como la fuente es el AD (sincronizada via GSPS), es efectivamente la contraseña del dominio. Windows actualiza su caché local tras la validación exitosa en nube.",
+                lblQ2: "¿Y la primera vez?",
+                explQ2: "Si el usuario ya existía en el PC (AD), Windows pedirá la <strong>contraseña antigua de Windows</strong> una única vez para verificar la identidad y vincular el perfil a Google.",
+                lblQ3: "¿Si olvido mi contraseña?",
+                explQ3: "⚠ <strong>NO RECOMENDADO.</strong> Si se usa '¿Olvidaste tu contraseña?' en la pantalla de bloqueo, se cambia en Google y en este PC, pero <strong>el AD local NO se actualiza</strong>. Esto romperá el acceso a recursos de red (carpetas, impresoras) hasta que se resincronice manualmente."
+            },
+            en: {
+                btnBack: "< ./Back_to_Panel",
+                pageIntro: "Google Credential Provider for Windows (GCPW) replaces the Windows login screen, allowing secure SSO authentication directly with Google Workspace.",
+                diagramTitle: "> Auth_Flow_Topology",
+
+                step1Title: "Download & Installation",
+                locAdmin: "📍 Admin Console > Devices > Mobile & endpoints > Windows settings > GCPW setup",
+                step1Desc: "The GCPW installer is generated specifically for the <strong>ad.fergava.es</strong> domain and includes an embedded enrollment token.",
+                lblDlOption: "Download Option",
+                lblToken: "Enrollment Token",
+                valTokenType: "Embedded (Automatic)",
+                hintToken: "(No need to enter manually if using the correct installer)",
+                hintPermitted: "(CRITICAL: You must add the domain here, or login will fail)",
+
+                step2Title: "Registry Configuration (Critical)",
+                step2Desc: "For security, GCPW does not allow anyone to log in by default. We must explicitly 'open the door' for our domain.",
+                explDomains: "This prevents users with personal accounts (@gmail.com) from logging into corporate devices.",
+
+                step3Title: "First Login Experience",
+                step3Desc: "Upon restarting the computer, the new login option appears.",
+                lblAction: "Action",
+                valAction: "Click on 'Add Work Account'",
+                lblResult: "Result",
+                explResult: "The Google popup window appears. The user enters their Google Workspace credentials (including 2FA/MFA).",
+                lblMagic: "The Magic (Linking)",
+                explMagic: "If the local Windows (AD) user has the same email in their <code>mail</code> attribute, GCPW automatically links both accounts. From now on, the Google password unlocks Windows.",
+
+                step4Title: "Password Lifecycle",
+                warnPassTitle: "Golden Rule: Synchronization",
+                warnPassDesc: "In a hybrid environment (with local AD), users must change their password <strong>ALWAYS IN WINDOWS</strong> (Ctrl+Alt+Del). <br>GSPS will push the change to Google. If done the other way around (changing on Google web), local AD won't know, and passwords will de-sync.",
+                lblQ1: "Which password is used?",
+                valQ1: "Active Directory Password (Synced)",
+                explQ1: "GCPW authenticates against Google, but since AD is the source (synced via GSPS), it is effectively the domain password. Windows updates its local cache after successful cloud validation.",
+                lblQ2: "What about the first time?",
+                explQ2: "If the user already existed on the PC (AD), Windows will ask for the <strong>old Windows password</strong> just once to verify identity and link the profile to Google.",
+                lblQ3: "Forgot password?",
+                explQ3: "⚠ <strong>NOT RECOMMENDED.</strong> If used from the lock screen ('Forgot Password?'), it changes in Google and on this PC, but <strong>local AD is NOT updated</strong>. This will break access to network resources (shares, printers) until manually resynced."
+            },
+            de: {
+                btnBack: "< ./Zurück_zum_Panel",
+                pageIntro: "Google Credential Provider für Windows (GCPW) ersetzt den Windows-Anmeldebildschirm und ermöglicht eine sichere SSO-Authentifizierung direkt mit Google Workspace.",
+                diagramTitle: "> Auth_Flow_Topologie",
+
+                step1Title: "Download & Installation",
+                locAdmin: "📍 Admin Console > Geräte > Mobilgeräte & Endpunkte > Windows-Einstellungen > GCPW-Einrichtung",
+                step1Desc: "Der GCPW-Installer wird speziell für die Domäne <strong>ad.fergava.es</strong> generiert und enthält ein eingebettetes Registrierungs-Token.",
+                lblDlOption: "Download-Option",
+                lblToken: "Registrierungs-Token",
+                valTokenType: "Eingebettet (Automatisch)",
+                hintToken: "(Muss nicht manuell eingegeben werden, wenn der korrekte Installer verwendet wird)",
+                hintPermitted: "(KRITISCH: Sie müssen die Domäne hier hinzufügen, sonst schlägt die Anmeldung fehl)",
+
+                step2Title: "Registry-Konfiguration (Kritisch)",
+                step2Desc: "Aus Sicherheitsgründen erlaubt GCPW standardmäßig niemandem die Anmeldung. Wir müssen die 'Tür' für unsere Domäne explizit öffnen.",
+                explDomains: "Dies verhindert, dass sich Benutzer mit persönlichen Konten (@gmail.com) an Unternehmensgeräten anmelden.",
+
+                step3Title: "Erste Anmeldung",
+                step3Desc: "Nach dem Neustart des Computers erscheint die neue Anmeldeoption.",
+                lblAction: "Aktion",
+                valAction: "Klicken Sie auf 'Arbeitskonto hinzufügen'",
+                lblResult: "Ergebnis",
+                explResult: "Das Google-Popup-Fenster erscheint. Der Benutzer gibt seine Google Workspace-Anmeldeinformationen ein (einschließlich 2FA/MFA).",
+                lblMagic: "Die Magie (Verknüpfung)",
+                explMagic: "Wenn der lokale Windows (AD)-Benutzer dieselbe E-Mail in seinem <code>mail</code>-Attribut hat, verknüpft GCPW beide Konten automatisch. Ab sofort entsperrt das Google-Passwort Windows.",
+
+                step4Title: "Passwort-Lebenszyklus",
+                warnPassTitle: "Goldene Regel: Synchronisation",
+                warnPassDesc: "In einer hybriden Umgebung (mit lokalem AD) müssen Benutzer ihr Passwort <strong>IMMER IN WINDOWS</strong> ändern (Strg+Alt+Entf). <br>GSPS sendet die Änderung an Google. Wenn es umgekehrt gemacht wird (Änderung im Google Web), erfährt das lokale AD nichts davon und die Passwörter werden asynchron.",
+                lblQ1: "Welches Passwort wird verwendet?",
+                valQ1: "Das Active Directory-Passwort (synchronisiert)",
+                explQ1: "GCPW authentifiziert gegen Google, aber da AD die Quelle ist (via GSPS synchronisiert), ist es effektiv das Domänenpasswort. Windows aktualisiert seinen lokalen Cache nach erfolgreicher Cloud-Validierung.",
+                lblQ2: "Und beim ersten Mal?",
+                explQ2: "Wenn der Benutzer bereits auf dem PC (AD) existierte, fragt Windows einmalig nach dem <strong>alten Windows-Passwort</strong>, um die Identität zu verifizieren und das Profil mit Google zu verknüpfen.",
+                lblQ3: "Passwort vergessen?",
+                explQ3: "⚠ <strong>NICHT EMPFOHLEN.</strong> Wenn 'Passwort vergessen?' auf dem Sperrbildschirm verwendet wird, ändert es sich in Google und auf diesem PC, aber <strong>das lokale AD wird NICHT aktualisiert</strong>. Dies unterbricht den Zugriff auf Netzwerkressourcen (Freigaben, Drucker) bis zur manuellen Neusynchronisierung."
+            }
+        };
+
+        function safeEdit(id, text) {
+            const element = document.getElementById(id);
+            if (element) element.innerHTML = text;
+        }
+
+        function setLanguage(lang) {
+            safeEdit('btn-back', translations[lang].btnBack);
+            safeEdit('page-intro', translations[lang].pageIntro);
+            safeEdit('diagram-title', translations[lang].diagramTitle);
+
+            safeEdit('step1-title', translations[lang].step1Title);
+            safeEdit('loc-admin', translations[lang].locAdmin);
+            safeEdit('step1-desc', translations[lang].step1Desc);
+            safeEdit('lbl-dl-option', translations[lang].lblDlOption);
+            safeEdit('lbl-token', translations[lang].lblToken);
+            safeEdit('val-token-type', translations[lang].valTokenType);
+            safeEdit('hint-token', translations[lang].hintToken);
+            safeEdit('hint-permitted', translations[lang].hintPermitted); // Nuevo ID
+
+            safeEdit('step2-title', translations[lang].step2Title);
+            safeEdit('step2-desc', translations[lang].step2Desc);
+            safeEdit('expl-domains', translations[lang].explDomains);
+
+            safeEdit('step3-title', translations[lang].step3Title);
+            safeEdit('step3-desc', translations[lang].step3Desc);
+            safeEdit('lbl-action', translations[lang].lblAction);
+            safeEdit('val-action', translations[lang].valAction);
+            safeEdit('lbl-result', translations[lang].lblResult);
+            safeEdit('expl-result', translations[lang].explResult);
+            safeEdit('lbl-magic', translations[lang].lblMagic);
+            safeEdit('expl-magic', translations[lang].explMagic);
+
+            safeEdit('step4-title', translations[lang].step4Title);
+            safeEdit('warn-pass-title', translations[lang].warnPassTitle);
+            safeEdit('warn-pass-desc', translations[lang].warnPassDesc);
+            safeEdit('lbl-q1', translations[lang].lblQ1);
+            safeEdit('val-q1', translations[lang].valQ1);
+            safeEdit('expl-q1', translations[lang].explQ1);
+            safeEdit('lbl-q2', translations[lang].lblQ2);
+            safeEdit('expl-q2', translations[lang].explQ2);
+            safeEdit('lbl-q3', translations[lang].lblQ3);
+            safeEdit('expl-q3', translations[lang].explQ3);
+
+            document.documentElement.lang = lang;
+            localStorage.setItem('selectedLang', lang);
+            updateActiveButton(lang);
+        }
+
+        function updateActiveButton(lang) {
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            const btn = document.getElementById('btn-' + lang);
+            if (btn) btn.classList.add('active');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('selectedLang');
+            if (savedLang) {
+                setLanguage(savedLang);
+            } else {
+                updateActiveButton('es');
+            }
+        });
+    </script>
+</body>
+</html>
