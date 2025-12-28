@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Config: ADFS | Learning_Path</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-color: #0a0b10;
+            --card-bg: #161b22;
+            --accent-color: #00f0ff; /* Cyan Neón Unificado */
+            --warning-bg: rgba(210, 153, 34, 0.15);
+            --warning-border: #d29922;
+            --text-primary: #e6e6e6;
+            --text-secondary: #8b949e;
+            --terminal-bg: #1e1e1e;
+            
+            /* POWERSHELL COLORS */
+            --ps-text: #d4d4d4;
+            --ps-verb: #569cd6;
+            --ps-param: #dcdcaa;
+            --ps-string: #ce9178;
+            --ps-op: #c586c0;
+            --ps-comment: #6a9955;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, .code-font, .lang-btn { font-family: 'Fira Code', monospace; }
+
+        /* HEADER */
+        header {
+            padding: 0 5%;
+            background: rgba(10, 11, 16, 0.98);
+            border-bottom: 1px solid #30363d;
+            position: sticky; top: 0; z-index: 1000; height: 80px;
+            display: flex; align-items: center;
+        }
+
+        .back-btn {
+            text-decoration: none; color: var(--accent-color); font-weight: 600;
+            display: flex; align-items: center; gap: 10px; transition: transform 0.2s;
+            font-family: 'Fira Code', monospace;
+        }
+        .back-btn:hover { transform: translateX(-5px); }
+
+        /* IDIOMAS */
+        .lang-selector { 
+            position: fixed; top: 25px; right: 5%; z-index: 99999;
+            display: flex; gap: 8px;
+        }
+        .lang-btn {
+            background-color: transparent; border: 1px solid #30363d;
+            color: var(--text-secondary); cursor: pointer; font-size: 0.85rem;
+            padding: 6px 10px; border-radius: 4px; font-weight: 600; transition: all 0.2s ease;
+        }
+        .lang-btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
+        .lang-btn.active {
+            background-color: rgba(0, 240, 255, 0.1); border-color: var(--accent-color);
+            color: var(--accent-color); box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        }
+
+        /* CONTENIDO */
+        .container { max-width: 1000px; margin: 0 auto; padding: 3rem 1rem; }
+        .intro-box { margin-bottom: 3rem; }
+        .intro-box h1 { font-size: 2.2rem; margin-bottom: 1rem; color: var(--accent-color); }
+        
+        /* DIAGRAMA */
+        .network-diagram {
+            background: #ffffff; border-radius: 12px; padding: 3rem 1rem; margin: 2rem 0;
+            display: flex; justify-content: center; align-items: center; gap: 15px;
+            border: 1px solid #30363d; flex-wrap: wrap;
+        }
+        .net-node {
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            color: #333; min-width: 140px; position: relative;
+        }
+        .net-icon { font-size: 3.5rem; margin-bottom: 1rem; color: #0f172a; }
+        .net-label { font-weight: bold; font-size: 1rem; margin-bottom: 0.2rem; }
+        .net-sub { font-size: 0.75rem; color: #666; font-family: 'Fira Code', monospace; }
+        
+        .arrow-line {
+            flex: 1; height: 2px; background: #333; position: relative; margin: 0 10px; max-width: 100px;
+        }
+        .arrow-line::after {
+            content: ''; position: absolute; right: 0; top: -4px;
+            border-left: 8px solid #333; border-top: 5px solid transparent; border-bottom: 5px solid transparent;
+        }
+        .arrow-text {
+            position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+            font-size: 0.7rem; white-space: nowrap; color: #555; font-weight: bold;
+        }
+
+        /* TARJETAS */
+        .step-card {
+            background: var(--card-bg); border: 1px solid #30363d; border-radius: 8px;
+            padding: 1.5rem; margin-bottom: 2rem; position: relative;
+            margin-top: 2.5rem;
+        }
+        .step-number {
+            position: absolute; top: -15px; left: 20px;
+            background: var(--bg-color); border: 1px solid var(--accent-color); color: var(--accent-color);
+            padding: 2px 10px; font-family: 'Fira Code', monospace; font-size: 0.9rem; border-radius: 4px;
+        }
+        .step-card h3 { margin-top: 0.5rem; margin-bottom: 1rem; color: #fff; }
+        
+        .ui-location {
+            display: inline-block; background: #21262d; color: var(--text-secondary);
+            font-size: 0.8rem; padding: 2px 8px; border-radius: 4px; margin-bottom: 1rem;
+            border: 1px solid #30363d; font-family: 'Fira Code', monospace;
+        }
+
+        .step-img {
+            max-width: 100%; width: auto; height: auto;
+            border-radius: 4px; border: 1px solid #30363d; margin-top: 1rem; display: block;
+        }
+
+        .param-list { list-style: none; margin-left: 0; }
+        .param-list li {
+            margin-bottom: 0.8rem; border-bottom: 1px solid #21262d; padding-bottom: 0.5rem;
+            display: flex; flex-direction: column;
+        }
+        .param-label { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 2px; }
+        .param-value { color: var(--accent-color); font-family: 'Fira Code', monospace; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 4px; width: fit-content;}
+        .param-hint { font-size: 0.75rem; color: #8b949e; margin-top: 4px; display: block; }
+
+        .tech-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px; border-radius: 4px; margin-top: 5px; font-size: 0.85rem; color: #ccc;
+        }
+
+        .arch-note {
+            background: rgba(35, 134, 54, 0.1); border-left: 4px solid #238636;
+            padding: 1rem; margin-bottom: 2rem; border-radius: 0 4px 4px 0;
+        }
+        
+        .terminal-window {
+            background-color: var(--terminal-bg); border-radius: 6px;
+            border: 1px solid #30363d; margin-top: 1rem; font-family: 'Fira Code', monospace; font-size: 0.85rem;
+        }
+        .terminal-header {
+            background-color: #252526; padding: 8px 15px; border-bottom: 1px solid #30363d; color: #ccc; font-size: 0.75rem;
+        }
+        .terminal-body { padding: 1.5rem; color: var(--ps-text); white-space: pre-wrap; overflow-x: auto; }
+        
+        /* Syntax Highlighting */
+        .ps-verb { color: var(--ps-verb); font-weight: bold; }
+        .ps-param { color: var(--ps-param); }
+        .ps-string { color: var(--ps-string); }
+        .ps-op { color: var(--ps-op); }
+        .ps-comment { color: var(--ps-comment); font-style: italic; }
+        .cmd-prompt { color: #ccc; margin-right: 10px; user-select: none; }
+
+        .warning-box {
+            background: var(--warning-bg); border: 1px solid var(--warning-border);
+            padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;
+        }
+        .warning-title { color: var(--warning-border); display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem; font-weight: bold;}
+
+        @media (max-width: 768px) {
+            .network-diagram { flex-direction: column; gap: 30px; }
+            .arrow-line { width: 2px; height: 40px; margin: 0 auto; max-width: 100px; }
+            .arrow-line::after { 
+                top: auto; bottom: -4px; right: -4px; transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="gws-ad-lab.html" class="back-btn" id="btn-back">&lt; ./Volver_al_Panel</a>
+    </header>
+
+    <div class="lang-selector">
+        <button id="btn-es" class="lang-btn active" onclick="setLanguage('es')">ES</button>
+        <button id="btn-en" class="lang-btn" onclick="setLanguage('en')">EN</button>
+        <button id="btn-de" class="lang-btn" onclick="setLanguage('de')">DE</button>
+    </div>
+
+    <main class="container">
+        
+        <div class="intro-box">
+            <h1>ADFS SSO Configuration</h1>
+            <p id="page-intro">Active Directory Federation Services (ADFS) permite autenticación Single Sign-On (SSO) centralizada. Google delega la autenticación en nuestro servidor local.</p>
+        </div>
+        
+        <h3 class="code-font" id="diagram-title" style="margin-bottom: 1rem;">> SAML_2.0_Flow</h3>
+        
+        <div class="network-diagram">
+            <div class="net-node">
+                <i class="fa-solid fa-user net-icon"></i>
+                <div class="net-label">User</div>
+            </div>
+            <div class="arrow-line"><span class="arrow-text">1. Login</span></div>
+            <div class="net-node">
+                <i class="fa-solid fa-cloud net-icon" style="color: #ea4335;"></i>
+                <div class="net-label">Google</div>
+                <div class="net-sub">Service Provider</div>
+            </div>
+            <div class="arrow-line"><span class="arrow-text">2. Redirect</span></div>
+            <div class="net-node">
+                <i class="fa-brands fa-windows net-icon" style="color: var(--accent-color);"></i>
+                <div class="net-label">ADFS</div>
+                <div class="net-sub">Identity Provider</div>
+            </div>
+            <div class="arrow-line"><span class="arrow-text">3. Token</span></div>
+            <div class="net-node">
+                <i class="fa-solid fa-check-circle net-icon" style="color: #2da44e;"></i>
+                <div class="net-label">Access</div>
+            </div>
+        </div>
+
+        <div class="arch-note">
+            <h4 id="ha-title" style="margin-bottom: 0.5rem; color: #fff;">ℹ Concepto: ADFS Farm & HA</h4>
+            <p id="ha-desc" style="font-size: 0.9rem; color: #e6e6e6;">
+                Si ADFS cae, <strong>NADIE</strong> entra en Google. Por eso es vital una Granja (Farm): dos o más servidores ADFS detrás de un balanceador de carga (WLB). Si uno cae, el otro responde.
+            </p>
+        </div>
+
+        <div class="step-card">
+            <span class="step-number">STEP 01</span>
+            <h3 id="p1-title">Preparación del Entorno</h3>
+            <span class="ui-location">📍 DNS & AD Infrastructure</span>
+            
+            <p id="p1-desc">
+                Antes de instalar el rol, preparamos la identidad del servicio. Es vital distinguir dos registros DNS:
+            </p>
+
+            <ul class="param-list">
+                <li>
+                    <span class="param-label">Host A Record</span>
+                    <span class="param-value">srv-adfs01.ad.fergava.es</span>
+                    <span class="param-hint" id="host-hint">(Nombre real de la máquina para gestión/RDP)</span>
+                </li>
+                <li>
+                    <span class="param-label">Service A Record</span>
+                    <span class="param-value">sts.ad.fergava.es</span>
+                    <span class="param-hint" id="service-hint">(Nombre del servicio federado - VIP del balanceador)</span>
+                </li>
+                <li>
+                    <span class="param-label">Service Account</span>
+                    <span class="param-value">AD\svc_adfs</span>
+                </li>
+            </ul>
+
+            <h4 class="sub-title" style="margin-top: 20px;"><i class="fa-solid fa-certificate"></i> <span id="cert-title">Certificados y Confianza</span></h4>
+            <p id="cert-desc" style="font-size:0.9rem; margin-bottom:10px;">
+                ADFS requiere HTTPS. Creamos un certificado autofirmado para el nombre de servicio.
+            </p>
+
+            <div class="terminal-window">
+                <div class="terminal-header">PowerShell (Administrator)</div>
+                <div class="terminal-body"><span class="cmd-prompt">PS C:\></span><span class="ps-verb">New-SelfSignedCertificate</span> <span class="ps-param">-DnsName</span> <span class="ps-string">"sts.ad.fergava.es"</span> <span class="ps-param">-CertStoreLocation</span> <span class="ps-string">"cert:\LocalMachine\My"</span></div>
+            </div>
+
+            <div class="tech-box" style="margin-top: 10px; margin-bottom: 10px; background: rgba(0, 240, 255, 0.05); border-left: 2px solid var(--accent-color);">
+                <strong id="howto-export-title">¿De dónde saco el .CER para la GPO?</strong><br>
+                <span id="howto-export-desc">Tras ejecutar el comando, abre <code>certlm.msc</code> (Certificados del equipo local) en el servidor. Ve a <strong>Personal > Certificados</strong>. Busca el certificado "sts.ad.fergava.es", clic derecho > Todas las tareas > Exportar. En el asistente, elige <strong>"No exportar la clave privada"</strong> y formato <strong>DER o Base64 (.CER)</strong>. Ese es el archivo que usarás en la GPO.</span>
+            </div>
+            
+            <div class="tech-box">
+                <strong id="gpo-cert-title">Distribución GPO:</strong><br>
+                <span id="gpo-cert-desc">Importamos ese .CER en: Computer Configuration > Policies > Windows Settings > Security Settings > Public Key Policies > <strong>Trusted Root Certification Authorities</strong>.</span>
+            </div>
+
+            <h4 class="sub-title" style="margin-top: 20px; font-size: 0.9rem;">> Service Principal Name (SPN)</h4>
+            <div class="terminal-window">
+                <div class="terminal-header">CMD (Administrator)</div>
+                <div class="terminal-body"><span class="cmd-prompt">C:\></span>setspn -S host/sts.ad.fergava.es AD\svc_adfs
+<span class="cmd-prompt">C:\></span>setspn -S http/sts.ad.fergava.es AD\svc_adfs</div>
+            </div>
+            <p id="spn-desc" style="font-size: 0.8rem; color: #888; margin-top:5px;">Esto vincula el nombre DNS del servicio con la cuenta de usuario, permitiendo la autenticación Kerberos.</p>
+            
+            <img src="img/adfs-dns.png" alt="DNS Configuration" class="step-img">
+        </div>
+
+        <div class="step-card">
+            <span class="step-number">STEP 02</span>
+            <h3 id="p2-title">Configuración del Asistente</h3>
+            <span class="ui-location">📍 Server Manager > ADFS Configuration Wizard</span>
+            
+            <p id="p2-desc">
+                Una vez instalado el rol, ejecutamos el asistente y configuramos las secciones clave:
+            </p>
+
+            <ul class="param-list">
+                <li>
+                    <span class="param-label" id="prop-title">1. Specify Service Properties</span>
+                    <span class="param-value">SSL Cert: sts.ad.fergava.es</span>
+                    <span class="param-hint" id="prop-hint">(El "Federation Service Name" se auto-rellena con el CN del certificado. DEBE coincidir con el registro DNS A)</span>
+                </li>
+                <li>
+                    <span class="param-label" id="acc-title">2. Specify Service Account</span>
+                    <span class="param-value">AD\svc_adfs</span>
+                </li>
+                <li>
+                    <span class="param-label" id="db-title">3. Specify Database</span>
+                    <span class="param-value">WID (Windows Internal Database)</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="step-card">
+            <span class="step-number">STEP 03</span>
+            <h3 id="p4-title">Conectar con Google (Relying Party)</h3>
+            <span class="ui-location">📍 AD FS Management > Relying Party Trusts</span>
+            
+            <p id="p4-desc">
+                Enseñamos a ADFS cómo "hablar" con Google Workspace. Configuramos la confianza manualmente usando los datos exactos del SP.
+            </p>
+
+            <div class="tech-box" style="margin-bottom: 15px;">
+                <span id="google-source">Fuente de datos: <em>Admin Console > Security > Authentication > SSO with third-party IdP > Third-party SSO profile > <strong>SP Details</strong></em></span>
+            </div>
+
+            <ul class="param-list">
+                <li>
+                    <span class="param-label">SAML 2.0 Service URL (ACS) Endpoints</span>
+                    <div style="display:flex; flex-direction:column; gap:5px;">
+                         <span class="param-value">https://www.google.com/a/ad.fergava.es/acs</span>
+                         <span class="param-value">https://accounts.google.com/samlrp/XXXXXXXXXXXXXXXX</span>
+                    </div>
+                </li>
+                <li>
+                    <span class="param-label">Relying Party Identifiers</span>
+                    <div style="display:flex; flex-direction:column; gap:5px;">
+                        <span class="param-value">google.com/a/ad.fergava.es</span>
+                        <span class="param-value">google.com/a/fergava.es</span>
+                        <span class="param-value">https://accounts.google.com/samlrp/XXXXXXXXXXXXXXXX</span>
+                    </div>
+                </li>
+                <li>
+                    <span class="param-label">Access Control Policy</span>
+                    <span class="param-value" id="val-policy">Permit everyone (Permitir a todos)</span>
+                </li>
+            </ul>
+            <img src="img/adfs-rp-trust.png" alt="Relying Party Trust Wizard" class="step-img">
+        </div>
+
+        <div class="step-card" style="border-color: var(--accent-color);">
+            <span class="step-number">STEP 04</span>
+            <h3 id="p5-title">Reglas de Notificación (Claim Rules)</h3>
+            <span class="ui-location">📍 Edit Claim Issuance Policy</span>
+            
+            <div class="tech-box" style="margin-bottom: 15px; border-left: 3px solid var(--accent-color);">
+                <strong id="claim-def-title">¿Qué son las Claim Rules?</strong>
+                <p id="claim-def-desc">Son el "traductor". AD habla "LDAP" (sAMAccountName, UserPrincipalName) y Google habla "SAML" (NameID). Estas reglas cogen el email del AD y lo empaquetan en un sobre XML que Google entiende.</p>
+            </div>
+
+            <div class="warning-box">
+                <div class="warning-title">⚠ <span id="warn-claims-title">Paso Crítico</span></div>
+                <p id="warn-claims-desc">Google requiere un formato muy específico. Si estas reglas fallan, el login dará error 403 o 500.</p>
+            </div>
+
+            <h4 class="code-font" style="color: #fff; margin-bottom: 5px;">Rule 1: Get Email</h4>
+            <div class="tech-box">
+                <strong>Template:</strong> Send LDAP Attributes as Claims<br>
+                <strong>Mapping:</strong> E-Mail-Addresses ➔ E-Mail Address
+            </div>
+
+            <h4 class="code-font" style="color: #fff; margin-bottom: 5px; margin-top: 15px;">Rule 2: Email to NameID</h4>
+            <div class="tech-box">
+                <strong>Template:</strong> Transform an Incoming Claim<br>
+                <strong>Incoming:</strong> E-Mail Address<br>
+                <strong>Outgoing:</strong> Name ID (Format: Email)
+            </div>
+            <img src="img/adfs-claims.png" alt="Claim Rules Configuration" class="step-img">
+        </div>
+
+        <div class="step-card">
+            <span class="step-number">STEP 05</span>
+            <h3 id="p6-title">Configuración en la Nube</h3>
+            <span class="ui-location">📍 Admin Console > Security > Authentication > SSO with third-party IdP</span>
+            
+            <p id="p6-desc">
+                Exportamos el certificado "Token-Signing" del ADFS (.CER) y lo subimos a Google para que confíe en nuestros tokens.
+            </p>
+
+            <div class="tech-box" style="margin-bottom: 15px;">
+                <strong id="export-title">Cómo exportar el Certificado Token-Signing:</strong><br>
+                <span id="export-desc">AD FS Management > Service > Certificates > Clic derecho en <strong>Token-Signing</strong> > View Certificate > Details > Copy to File > Elegir formato <strong>Base-64 encoded X.509 (.CER)</strong>.</span>
+            </div>
+
+            <ul class="param-list">
+                <li>
+                    <span class="param-label">Sign-in Page URL</span>
+                    <span class="param-value">https://sts.ad.fergava.es/adfs/ls/</span>
+                </li>
+                <li>
+                    <span class="param-label">Sign-out Page URL</span>
+                    <span class="param-value">https://sts.ad.fergava.es/adfs/ls/?wa=wsignout1.0</span>
+                </li>
+                <li>
+                    <span class="param-label">IdP Entity ID</span>
+                    <span class="param-value">http://sts.ad.fergava.es/adfs/services/trust</span>
+                </li>
+                <li>
+                    <span class="param-label">Verification Certificate</span>
+                    <span class="param-value">Token-Signing.cer (Base64)</span>
+                </li>
+            </ul>
+            <img src="img/adfs-google-sso.png" alt="Google Admin SSO Settings" class="step-img">
+        </div>
+
+        <div class="step-card">
+            <span class="step-number">STEP 06</span>
+            <h3 id="p7-title">Experiencia de Usuario (WIA)</h3>
+            <span class="ui-location">📍 PowerShell & GPO</span>
+            
+            <p id="p7-desc">
+                Para evitar que el usuario escriba su contraseña dos veces, habilitamos la Autenticación Integrada de Windows (WIA) para la Intranet. También añadimos soporte para Chrome/Edge.
+            </p>
+
+            <div class="terminal-window">
+                <div class="terminal-header">PowerShell (Administrator)</div>
+                <div class="terminal-body"><span class="ps-comment"># Habilitar WIA como método primario en la Intranet</span>
+<span class="cmd-prompt">PS C:\></span><span class="ps-verb">Set-AdfsGlobalAuthenticationPolicy</span> <span class="ps-param">-PrimaryIntranetAuthenticationProvider</span> <span class="ps-op">@</span>(<span class="ps-string">'WindowsAuthentication'</span>, <span class="ps-string">'FormsAuthentication'</span>)
+
+<span class="ps-comment"># Añadir User Agents modernos (Chrome, Edge) para que usen WIA</span>
+<span class="cmd-prompt">PS C:\></span><span class="ps-verb">Set-AdfsProperties</span> <span class="ps-param">-WIASupportedUserAgents</span> <span class="ps-op">@</span>(<span class="ps-string">"MSIE 6.0"</span>, <span class="ps-string">"MSIE 7.0"</span>, <span class="ps-string">"MSIE 8.0"</span>, <span class="ps-string">"MSIE 9.0"</span>, <span class="ps-string">"MSIE 10.0"</span>, <span class="ps-string">"Trident/7.0"</span>, <span class="ps-string">"MSIPC"</span>, <span class="ps-string">"Windows Rights Management Client"</span>, <span class="ps-string">"Mozilla/5.0"</span>)</div>
+            </div>
+
+            <div class="tech-box" style="margin-top: 15px;">
+                <strong id="lbl-gpo">GPO - Intranet Zone:</strong><br>
+                <span id="desc-gpo">Añadimos <code>https://sts.ad.fergava.es</code> a la "Zona de Intranet Local" en los navegadores mediante GPO para permitir el envío automático de credenciales.</span>
+            </div>
+        </div>
+
+    </main>
+
+    <footer style="text-align: center; padding: 2rem; color: var(--text-secondary); border-top: 1px solid #30363d;">
+        <p>Learning_Path | ADFS Lab</p>
+    </footer>
+
+    <script>
+        const translations = {
+            es: {
+                btnBack: "< ./Volver_al_Panel",
+                pageIntro: "Active Directory Federation Services (ADFS) permite autenticación Single Sign-On (SSO) centralizada. Google delega la autenticación en nuestro servidor local.",
+                diagramTitle: "> SAML_2.0_Flow",
+                haTitle: "ℹ Concepto: ADFS Farm & HA",
+                haDesc: "Si ADFS cae, <strong>NADIE</strong> entra en Google. Por eso es vital una Granja (Farm): dos o más servidores ADFS detrás de un balanceador de carga (WLB). Si uno cae, el otro responde.",
+
+                p1Title: "Preparación del Entorno",
+                p1Desc: "Antes de instalar el rol, preparamos la identidad del servicio. Es vital distinguir dos registros DNS:",
+                hostHint: "(Nombre real de la máquina para gestión/RDP)",
+                serviceHint: "(Nombre del servicio federado - VIP del balanceador)",
+                certTitle: "Certificados y Confianza",
+                certDesc: "ADFS requiere HTTPS. Creamos un certificado autofirmado para el nombre de servicio.",
+                howtoExportTitle: "¿De dónde saco el .CER para la GPO?",
+                howtoExportDesc: "Tras ejecutar el comando, abre <code>certlm.msc</code> (Certificados del equipo local) en el servidor. Ve a <strong>Personal > Certificados</strong>. Busca el certificado 'sts.ad.fergava.es', clic derecho > Todas las tareas > Exportar. En el asistente, elige <strong>'No exportar la clave privada'</strong> y formato <strong>DER o Base64 (.CER)</strong>. Ese es el archivo que usarás en la GPO.",
+                gpoCertTitle: "Distribución GPO:",
+                gpoCertDesc: "Importamos ese .CER en: Computer Configuration > Policies > Windows Settings > Security Settings > Public Key Policies > <strong>Trusted Root Certification Authorities</strong>.",
+                spnDesc: "Esto vincula el nombre DNS del servicio con la cuenta de usuario, permitiendo la autenticación Kerberos.",
+
+                p2Title: "Configuración del Asistente",
+                p2Desc: "Una vez instalado el rol, ejecutamos el asistente y configuramos las secciones clave:",
+                propTitle: "1. Specify Service Properties",
+                propHint: "(El 'Federation Service Name' se auto-rellena con el CN del certificado. DEBE coincidir con el registro DNS A)",
+                accTitle: "2. Specify Service Account",
+                dbTitle: "3. Specify Database",
+
+                p4Title: "Conectar con Google (Relying Party)",
+                p4Desc: "Enseñamos a ADFS cómo 'hablar' con Google Workspace. Configuramos la confianza manualmente usando los datos exactos del SP.",
+                googleSource: "Fuente de datos: <em>Admin Console > Security > Authentication > SSO with third-party IdP > Third-party SSO profile > <strong>SP Details</strong></em>",
+                valPolicy: "Permit everyone (Permitir a todos)",
+
+                p5Title: "Reglas de Notificación (Claim Rules)",
+                claimDefTitle: "¿Qué son las Claim Rules?",
+                claimDefDesc: "Son el 'traductor'. AD habla 'LDAP' (sAMAccountName, UserPrincipalName) y Google habla 'SAML' (NameID). Estas reglas cogen el email del AD y lo empaquetan en un sobre XML que Google entiende.",
+                warnClaimsTitle: "Paso Crítico",
+                warnClaimsDesc: "Google requiere un formato muy específico. Si estas reglas fallan, el login dará error 403 o 500.",
+
+                p6Title: "Configuración en la Nube",
+                p6Desc: "Exportamos el certificado 'Token-Signing' del ADFS (.CER) y lo subimos a Google para que confíe en nuestros tokens.",
+                exportTitle: "Cómo exportar el Certificado Token-Signing:",
+                exportDesc: "AD FS Management > Service > Certificates > Clic derecho en <strong>Token-Signing</strong> > View Certificate > Details > Copy to File > Elegir formato <strong>Base-64 encoded X.509 (.CER)</strong>.",
+
+                p7Title: "Experiencia de Usuario (WIA)",
+                p7Desc: "Para evitar que el usuario escriba su contraseña dos veces, habilitamos la Autenticación Integrada de Windows (WIA) para la Intranet. También añadimos soporte para Chrome/Edge.",
+                lblGpo: "GPO - Intranet Zone:",
+                descGpo: "Añadimos <code>https://sts.ad.fergava.es</code> a la 'Zona de Intranet Local' en los navegadores mediante GPO para permitir el envío automático de credenciales."
+            },
+            en: {
+                btnBack: "< ./Back_to_Panel",
+                pageIntro: "Active Directory Federation Services (ADFS) enables centralized Single Sign-On (SSO). Google delegates authentication to our on-premise server.",
+                diagramTitle: "> SAML_2.0_Flow",
+                haTitle: "ℹ Concept: ADFS Farm & HA",
+                haDesc: "If ADFS goes down, <strong>NO ONE</strong> logs into Google. That's why a Farm is vital: two or more ADFS servers behind a Load Balancer (WLB). If one fails, the other responds.",
+
+                p1Title: "Environment Preparation",
+                p1Desc: "Before installing the role, we prepare the service identity. It is vital to distinguish two DNS records:",
+                hostHint: "(Real machine name for management/RDP)",
+                serviceHint: "(Federated Service Name - LB VIP)",
+                certTitle: "Certificates & Trust",
+                certDesc: "ADFS mandates HTTPS. We create a self-signed certificate for the service name.",
+                howtoExportTitle: "Where do I get the .CER for the GPO?",
+                howtoExportDesc: "After running the command, open <code>certlm.msc</code> (Local Computer Certificates) on the server. Go to <strong>Personal > Certificates</strong>. Find the 'sts.ad.fergava.es' certificate, right-click > All Tasks > Export. In the wizard, choose <strong>'Do not export the private key'</strong> and format <strong>DER or Base64 (.CER)</strong>. That is the file you will use in the GPO.",
+                gpoCertTitle: "GPO Distribution:",
+                gpoCertDesc: "Import that .CER into: Computer Configuration > Policies > Windows Settings > Security Settings > Public Key Policies > <strong>Trusted Root Certification Authorities</strong>.",
+                spnDesc: "This links the service DNS name with the user account, enabling Kerberos authentication.",
+
+                p2Title: "Wizard Configuration",
+                p2Desc: "Once the role is installed, we run the wizard and configure key sections:",
+                propTitle: "1. Specify Service Properties",
+                propHint: "(The 'Federation Service Name' auto-fills with the Certificate CN. MUST match the DNS A record)",
+                accTitle: "2. Specify Service Account",
+                dbTitle: "3. Specify Database",
+
+                p4Title: "Google Relying Party Trust",
+                p4Desc: "We teach ADFS how to 'talk' to Google Workspace. We configure the trust manually using exact SP data.",
+                googleSource: "Data Source: <em>Admin Console > Security > Authentication > SSO with third-party IdP > Third-party SSO profile > <strong>SP Details</strong></em>",
+                valPolicy: "Permit everyone",
+
+                p5Title: "Claim Rules",
+                claimDefTitle: "What are Claim Rules?",
+                claimDefDesc: "They are the 'translator'. AD speaks 'LDAP' and Google speaks 'SAML'. These rules take the email from AD and package it into an XML envelope that Google understands.",
+                warnClaimsTitle: "Critical Step",
+                warnClaimsDesc: "Google requires a very specific format. If these rules fail, login will result in a 403 or 500 error.",
+
+                p6Title: "Cloud Configuration",
+                p6Desc: "We export the 'Token-Signing' certificate from ADFS (.CER) and upload it to Google so it trusts our tokens.",
+                exportTitle: "How to export the Token-Signing Certificate:",
+                exportDesc: "AD FS Management > Service > Certificates > Right-click <strong>Token-Signing</strong> > View Certificate > Details > Copy to File > Choose format <strong>Base-64 encoded X.509 (.CER)</strong>.",
+
+                p7Title: "User Experience (WIA)",
+                p7Desc: "To prevent users from typing their password twice, we enable Windows Integrated Authentication (WIA) for the Intranet. We also add support for Chrome/Edge.",
+                lblGpo: "GPO - Intranet Zone:",
+                descGpo: "We add <code>https://sts.ad.fergava.es</code> to the 'Local Intranet Zone' in browsers via GPO to allow automatic credential passing."
+            },
+            de: {
+                btnBack: "< ./Zurück_zum_Panel",
+                pageIntro: "Active Directory Federation Services (ADFS) ermöglicht zentralisiertes Single Sign-On (SSO). Google delegiert die Authentifizierung an unseren lokalen Server.",
+                diagramTitle: "> SAML_2.0_Fluss",
+                haTitle: "ℹ Konzept: ADFS Farm & HA",
+                haDesc: "Wenn ADFS ausfällt, kann sich <strong>NIEMAND</strong> bei Google anmelden. Deshalb ist eine Farm entscheidend: zwei oder mehr ADFS-Server hinter einem Load Balancer (WLB).",
+
+                p1Title: "Vorbereitung der Umgebung",
+                p1Desc: "Vor der Installation bereiten wir die Dienstidentität vor. Es ist wichtig, zwei DNS-Einträge zu unterscheiden:",
+                hostHint: "(Realer Maschinenname für Verwaltung/RDP)",
+                serviceHint: "(Föderierter Dienstname - LB VIP)",
+                certTitle: "Zertifikate & Vertrauen",
+                certDesc: "ADFS erfordert zwingend HTTPS. Wir erstellen ein selbstsigniertes Zertifikat für den Dienstnamen.",
+                howtoExportTitle: "Woher bekomme ich das .CER für die GPO?",
+                howtoExportDesc: "Öffnen Sie nach Ausführung des Befehls <code>certlm.msc</code> (Zertifikate des lokalen Computers) auf dem Server. Gehen Sie zu <strong>Eigene Zertifikate > Zertifikate</strong>. Suchen Sie das Zertifikat 'sts.ad.fergava.es', Rechtsklick > Alle Aufgaben > Exportieren. Wählen Sie im Assistenten <strong>'Privaten Schlüssel nicht exportieren'</strong> und das Format <strong>DER oder Base64 (.CER)</strong>. Dies ist die Datei, die Sie in der GPO verwenden.",
+                gpoCertTitle: "GPO-Verteilung:",
+                gpoCertDesc: "Importieren Sie dieses .CER in: Computerkonfiguration > Richtlinien > Windows-Einstellungen > Sicherheitseinstellungen > Richtlinien für öffentliche Schlüssel > <strong>Vertrauenswürdige Stammzertifizierungsstellen</strong>.",
+                spnDesc: "Dies verknüpft den DNS-Namen des Dienstes mit dem Benutzerkonto und ermöglicht die Kerberos-Authentifizierung.",
+
+                p2Title: "Assistenten-Konfiguration",
+                p2Desc: "Sobald die Rolle installiert ist, führen wir den Assistenten aus und konfigurieren die wichtigsten Abschnitte:",
+                propTitle: "1. Specify Service Properties",
+                propHint: "(Der 'Federation Service Name' wird automatisch mit dem CN des Zertifikats ausgefüllt. MUSS mit dem DNS-A-Eintrag übereinstimmen)",
+                accTitle: "2. Specify Service Account",
+                dbTitle: "3. Specify Database",
+
+                p4Title: "Verbindung mit Google (Relying Party)",
+                p4Desc: "Wir bringen ADFS bei, wie es mit Google Workspace 'spricht'. Wir konfigurieren die Vertrauensstellung manuell mit exakten SP-Daten.",
+                googleSource: "Datenquelle: <em>Admin-Konsole > Sicherheit > Authentifizierung > SSO mit Drittanbieter-IdP > Drittanbieter-SSO-Profil > <strong>SP-Details</strong></em>",
+                valPolicy: "Permit everyone (Jeden zulassen)",
+
+                p5Title: "Anspruchsregeln (Claim Rules)",
+                claimDefTitle: "Was sind Claim Rules?",
+                claimDefDesc: "Sie sind der 'Übersetzer'. AD spricht 'LDAP' und Google spricht 'SAML'. Diese Regeln nehmen die E-Mail vom AD und verpacken sie in einen XML-Umschlag, den Google versteht.",
+                warnClaimsTitle: "Kritischer Schritt",
+                warnClaimsDesc: "Google benötigt ein sehr spezifisches Format. Wenn diese Regeln fehlschlagen, führt die Anmeldung zu einem 403- oder 500-Fehler.",
+
+                p6Title: "Cloud-Konfiguration",
+                p6Desc: "Wir exportieren das 'Token-Signing'-Zertifikat von ADFS (.CER) und laden es bei Google hoch, damit unseren Token vertraut wird.",
+                exportTitle: "So exportieren Sie das Token-Signing-Zertifikat:",
+                exportDesc: "AD FS Management > Dienst > Zertifikate > Rechtsklick auf <strong>Token-Signing</strong> > Zertifikat anzeigen > Details > In Datei kopieren > Format <strong>Base-64 encoded X.509 (.CER)</strong> wählen.",
+
+                p7Title: "Benutzererfahrung (WIA)",
+                p7Desc: "Um zu verhindern, dass Benutzer ihr Passwort zweimal eingeben müssen, aktivieren wir die integrierte Windows-Authentifizierung (WIA) für das Intranet. Außerdem fügen wir Unterstützung für Chrome/Edge hinzu.",
+                lblGpo: "GPO - Intranet-Zone:",
+                descGpo: "Wir fügen <code>https://sts.ad.fergava.es</code> per GPO zur 'Lokalen Intranet-Zone' in Browsern hinzu, um die automatische Übermittlung von Anmeldeinformationen zu ermöglichen."
+            }
+        };
+
+        function safeEdit(id, text) {
+            const element = document.getElementById(id);
+            if (element) element.innerHTML = text;
+        }
+
+        function setLanguage(lang) {
+            safeEdit('btn-back', translations[lang].btnBack);
+            safeEdit('page-intro', translations[lang].pageIntro);
+            safeEdit('diagram-title', translations[lang].diagramTitle);
+            
+            safeEdit('ha-title', translations[lang].haTitle);
+            safeEdit('ha-desc', translations[lang].haDesc);
+
+            safeEdit('p1-title', translations[lang].p1Title);
+            safeEdit('p1-desc', translations[lang].p1Desc);
+            safeEdit('host-hint', translations[lang].hostHint);
+            safeEdit('service-hint', translations[lang].serviceHint);
+            safeEdit('cert-title', translations[lang].certTitle);
+            safeEdit('cert-desc', translations[lang].certDesc);
+            safeEdit('howto-export-title', translations[lang].howtoExportTitle);
+            safeEdit('howto-export-desc', translations[lang].howtoExportDesc);
+            safeEdit('gpo-cert-title', translations[lang].gpoCertTitle);
+            safeEdit('gpo-cert-desc', translations[lang].gpoCertDesc);
+            safeEdit('spn-desc', translations[lang].spnDesc);
+
+            safeEdit('p2-title', translations[lang].p2Title);
+            safeEdit('p2-desc', translations[lang].p2Desc);
+            safeEdit('prop-title', translations[lang].propTitle);
+            safeEdit('prop-hint', translations[lang].propHint);
+            safeEdit('acc-title', translations[lang].accTitle);
+            safeEdit('db-title', translations[lang].dbTitle);
+
+            safeEdit('p4-title', translations[lang].p4Title);
+            safeEdit('p4-desc', translations[lang].p4Desc);
+            safeEdit('google-source', translations[lang].googleSource);
+            safeEdit('val-policy', translations[lang].valPolicy);
+
+            safeEdit('p5-title', translations[lang].p5Title);
+            safeEdit('claim-def-title', translations[lang].claimDefTitle);
+            safeEdit('claim-def-desc', translations[lang].claimDefDesc);
+            safeEdit('warn-claims-title', translations[lang].warnClaimsTitle);
+            safeEdit('warn-claims-desc', translations[lang].warnClaimsDesc);
+
+            safeEdit('p6-title', translations[lang].p6Title);
+            safeEdit('p6-desc', translations[lang].p6Desc);
+            safeEdit('export-title', translations[lang].exportTitle);
+            safeEdit('export-desc', translations[lang].exportDesc);
+
+            safeEdit('p7-title', translations[lang].p7Title);
+            safeEdit('p7-desc', translations[lang].p7Desc);
+            safeEdit('lbl-gpo', translations[lang].lblGpo);
+            safeEdit('desc-gpo', translations[lang].descGpo);
+
+            document.documentElement.lang = lang;
+            localStorage.setItem('selectedLang', lang);
+            updateActiveButton(lang);
+        }
+
+        function updateActiveButton(lang) {
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            const btn = document.getElementById('btn-' + lang);
+            if (btn) btn.classList.add('active');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('selectedLang');
+            if (savedLang) {
+                setLanguage(savedLang);
+            } else {
+                updateActiveButton('es');
+            }
+        });
+    </script>
+</body>
+</html>
