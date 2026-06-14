@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redundancy & HA | Learning_Path</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0a0b10;
+            --card-bg: #161b22;
+            --accent-color: #00f0ff;
+            --win-color: #79c0ff;
+            --linux-color: #ffb454;
+            --slb-color: #d2a8ff;
+            --text-primary: #e6e6e6;
+            --text-secondary: #8b949e;
+            --lab-btn-bg: rgba(35, 134, 54, 0.2);
+            --lab-btn-border: #2ea043;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, .code-font, .lang-btn { font-family: 'Fira Code', monospace; }
+
+        /* HEADER */
+        header {
+            padding: 0 5%;
+            background: rgba(10, 11, 16, 0.98);
+            border-bottom: 1px solid #30363d;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            height: 80px;
+            display: flex; 
+            align-items: center;
+        }
+
+        .back-btn {
+            text-decoration: none; 
+            color: var(--accent-color); 
+            font-weight: 600;
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            transition: transform 0.2s;
+            font-family: 'Fira Code', monospace;
+        }
+        .back-btn:hover { transform: translateX(-5px); }
+
+        /* --- SELECTOR FLOTANTE (FIXED) --- */
+        .lang-selector { 
+            position: fixed;
+            top: 25px;
+            right: 5%;
+            z-index: 99999;
+            display: flex; 
+            gap: 8px;
+        }
+
+        .lang-btn {
+            background-color: transparent;
+            border: 1px solid #30363d;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .lang-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        /* ESTADO ACTIVO */
+        .lang-btn.active {
+            background-color: rgba(0, 240, 255, 0.1);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        }
+
+        @media (max-width: 600px) {
+            .lang-selector { top: 25px; right: 3%; gap: 5px; }
+            .lang-btn { padding: 4px 6px; font-size: 0.75rem; background: rgba(10, 11, 16, 0.9); }
+        }
+
+        /* CONTENIDO */
+        .container { max-width: 1000px; margin: 0 auto; padding: 3rem 1rem; }
+        .intro-box { border-left: 4px solid var(--accent-color); padding-left: 1.5rem; margin-bottom: 3rem; }
+        .tech-section { margin-bottom: 4rem; }
+        .section-header {
+            display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;
+            border-bottom: 1px solid #30363d; padding-bottom: 0.5rem;
+        }
+        
+        /* GRID Y TARJETAS */
+        .cards-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .tech-card {
+            background: var(--card-bg); border: 1px solid #30363d; border-radius: 8px;
+            padding: 1.5rem; transition: transform 0.2s; 
+            display: flex; flex-direction: column;
+        }
+        .tech-card:hover { transform: translateY(-5px); border-color: var(--accent-color); }
+        .tech-card h3 { margin-bottom: 0.5rem; font-size: 1.1rem; }
+        .tech-card p { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem; flex-grow: 1; }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        .lab-link {
+            flex: 1; text-align: center;
+            font-size: 0.8rem; color: #fff; text-decoration: none; font-weight: 600;
+            background-color: var(--lab-btn-bg); border: 1px solid var(--lab-btn-border);
+            padding: 6px 10px; border-radius: 4px; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 5px;
+        }
+        .lab-link:hover { background-color: var(--lab-btn-border); color: #fff; box-shadow: 0 0 10px rgba(46, 160, 67, 0.4); }
+
+        footer { text-align: center; padding: 2rem; border-top: 1px solid #30363d; margin-top: 2rem; color: var(--text-secondary); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="back-btn" id="btn-back">&lt; ./Volver_al_Inicio</a>
+    </header>
+
+    <div class="lang-selector">
+        <button id="btn-es" class="lang-btn active" onclick="setLanguage('es')">ES</button>
+        <button id="btn-en" class="lang-btn" onclick="setLanguage('en')">EN</button>
+        <button id="btn-de" class="lang-btn" onclick="setLanguage('de')">DE</button>
+    </div>
+
+    <main class="container">
+        
+        <h1 style="margin-bottom: 0.5rem; font-size: 2.2rem;" id="page-title">Redundancia y Alta Disponibilidad</h1>
+        
+        <div class="intro-box">
+            <p id="page-desc">
+                La resiliencia en infraestructura de TI se construye mitigando puntos únicos de fallo. Este laboratorio abarca desde la agregación de enlaces a nivel de capa de enlace de datos (NIC Teaming/Bonding) hasta la distribución de carga de aplicaciones.
+            </p>
+        </div>
+
+        <section class="tech-section">
+            <div class="section-header">
+                <span style="color: var(--win-color); font-size: 1.5rem;">❖</span>
+                <h2 class="code-font" id="win-title" style="color: var(--win-color);">1. NIC Teaming en Windows</h2>
+            </div>
+            <p id="win-desc" style="margin-bottom: 1.5rem; color: var(--text-secondary);">
+                Configuración nativa de agregación de adaptadores de red (LBFO) en entornos Windows Server.
+            </p>
+
+            <div class="cards-grid">
+                <article class="tech-card">
+                    <h3 id="win-si-title">Modo Switch Independent</h3>
+                    <p id="win-si-text">
+                        Permite conectar los adaptadores a switches físicos diferentes. No requiere configuración previa en la infraestructura de conmutación.
+                    </p>
+                    <div class="card-actions">
+                        <a href="#" class="lab-link" id="btn-lab-1">🧪 Lab Config</a>
+                    </div>
+                </article>
+
+                <article class="tech-card">
+                    <h3 id="win-lacp-title">Modo LACP</h3>
+                    <p id="win-lacp-text">
+                        Agregación dinámica dependiente del switch. Utiliza el protocolo Link Aggregation Control Protocol para negociar los enlaces de forma automática.
+                    </p>
+                    <div class="card-actions">
+                        <a href="#" class="lab-link" id="btn-lab-2">🧪 Lab Config</a>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="tech-section">
+            <div class="section-header">
+                <span style="color: var(--linux-color); font-size: 1.5rem;">🐧</span>
+                <h2 class="code-font" id="lin-title" style="color: var(--linux-color);">2. NIC Teaming en Linux</h2>
+            </div>
+            <p id="lin-desc" style="margin-bottom: 1.5rem; color: var(--text-secondary);">
+                Implementación de Network Bonding en Linux para conseguir tolerancia a fallos y agregación de ancho de banda.
+            </p>
+
+            <div class="cards-grid">
+                <article class="tech-card">
+                    <h3 id="lin-ab-title">Modo Active-Backup (Mode 1)</h3>
+                    <p id="lin-ab-text">
+                        Solo una interfaz del conjunto está activa. Si el adaptador principal falla, una interfaz secundaria toma el control inmediatamente de forma transparente.
+                    </p>
+                    <div class="card-actions">
+                        <a href="#" class="lab-link" id="btn-lab-3">🧪 Lab Config</a>
+                    </div>
+                </article>
+
+                <article class="tech-card">
+                    <h3 id="lin-rr-title">Modo Round Robin (Mode 0)</h3>
+                    <p id="lin-rr-text">
+                        Transmite los paquetes de forma secuencial desde el primer esclavo disponible hasta el último, proporcionando balanceo de carga estático.
+                    </p>
+                    <div class="card-actions">
+                        <a href="#" class="lab-link" id="btn-lab-4">🧪 Lab Config</a>
+                    </div>
+                </article>
+
+                <article class="tech-card">
+                    <h3 id="lin-lacp-title">Modo LACP (802.3ad / Mode 4)</h3>
+                    <p id="lin-lacp-text">
+                        Crea grupos de agregación dinámica que comparten la misma velocidad y configuraciones de dúplex mediante la norma IEEE 802.3ad.
+                    </p>
+                    <div class="card-actions">
+                        <a href="#" class="lab-link" id="btn-lab-5">🧪 Lab Config</a>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="tech-section">
+            <div class="section-header">
+                <span style="color: var(--slb-color); font-size: 1.5rem;">⎋</span>
+                <h2 class="code-font" id="slb-title" style="color: var(--slb-color);">3. Server Load Balancing (SLB)</h2>
+            </div>
+            <p id="slb-desc" style="margin-bottom: 1.5rem; color: var(--text-secondary);">
+                Distribución de tráfico de red a nivel de aplicación para garantizar el escalado y alta disponibilidad de servicios.
+            </p>
+
+            <div class="cards-grid">
+                <article class="tech-card">
+                    <h3 id="haproxy-title">HAProxy Load Balancing</h3>
+                    <p id="haproxy-text">
+                        Configuración de HAProxy como proxy inverso y balanceador de carga de alto rendimiento para protocolos TCP y HTTP.
+                    </p>
+                    <div class="card-actions">
+                        <a href="#" class="lab-link" id="btn-lab-6">🧪 Lab Config</a>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2025 fergava.es | Redundancy Lab</p>
+    </footer>
+
+    <script>
+        const translations = {
+            es: {
+                btnBack: "< ./Volver_al_Inicio",
+                pageTitle: "Redundancia y Alta Disponibilidad",
+                pageDesc: "La resiliencia en infraestructura de TI se construye mitigando puntos únicos de fallo. Este laboratorio abarca desde la agregación de enlaces a nivel de capa de enlace de datos (NIC Teaming/Bonding) hasta la distribución de carga de aplicaciones.",
+                winTitle: "1. NIC Teaming en Windows",
+                winDesc: "Configuración nativa de agregación de adaptadores de red (LBFO) en entornos Windows Server.",
+                winSiTitle: "Modo Switch Independent",
+                winSiText: "Permite conectar los adaptadores a switches físicos diferentes. No requiere configuración previa en la infraestructura de conmutación.",
+                winLacpTitle: "Modo LACP",
+                winLacpText: "Agregación dinámica dependiente del switch. Utiliza el protocolo Link Aggregation Control Protocol para negociar los enlaces de forma automática.",
+                linTitle: "2. NIC Teaming en Linux",
+                linDesc: "Implementación de Network Bonding en Linux para conseguir tolerancia a fallos y agregación de ancho de banda.",
+                linAbTitle: "Modo Active-Backup (Mode 1)",
+                linAbText: "Solo una interfaz del conjunto está activa. Si el adaptador principal falla, una interfaz secundaria toma el control inmediatamente de forma transparente.",
+                linRrTitle: "Modo Round Robin (Mode 0)",
+                linRrText: "Transmite los paquetes de forma secuencial desde el primer esclavo disponible hasta el último, proporcionando balanceo de carga estático.",
+                linLacpTitle: "Modo LACP (802.3ad / Mode 4)",
+                linLacpText: "Crea grupos de agregación dinámica que comparten la misma velocidad y configuraciones de dúplex mediante la norma IEEE 802.3ad.",
+                slbTitle: "3. Server Load Balancing (SLB)",
+                slbDesc: "Distribución de tráfico de red a nivel de aplicación para garantizar el escalado y alta disponibilidad de servicios.",
+                haproxyTitle: "HAProxy Load Balancing",
+                haproxyText: "Configuración de HAProxy como proxy inverso y balanceador de carga de alto rendimiento para protocolos TCP y HTTP.",
+                btnLab: "🧪 Lab Config"
+            },
+            en: {
+                btnBack: "< ./Back_to_Home",
+                pageTitle: "Redundancy & High Availability",
+                pageDesc: "IT infrastructure resilience is built by mitigating single points of failure. This lab covers link aggregation at the data link layer (NIC Teaming/Bonding) up to application load distribution.",
+                winTitle: "1. NIC Teaming in Windows",
+                winDesc: "Native network adapter aggregation (LBFO) setup in Windows Server environments.",
+                winSiTitle: "Switch Independent Mode",
+                winSiText: "Allows connecting adapters to different physical switches. Requires no previous configuration on the switching infrastructure.",
+                winLacpTitle: "LACP Mode",
+                winLacpText: "Switch-dependent dynamic aggregation. Uses the Link Aggregation Control Protocol to negotiate links automatically.",
+                linTitle: "2. NIC Teaming in Linux",
+                linDesc: "Network Bonding implementation in Linux to achieve fault tolerance and link aggregation bandwidth.",
+                linAbTitle: "Active-Backup Mode (Mode 1)",
+                linAbText: "Only one interface in the bond is active. If the primary adapter fails, a backup interface immediately takes over transparently.",
+                linRrTitle: "Round Robin Mode (Mode 0)",
+                linRrText: "Transmits packets sequentially from the first available slave interface to the last, providing static load balancing.",
+                linLacpTitle: "LACP Mode (802.3ad / Mode 4)",
+                linLacpText: "Creates dynamic aggregation groups that share speed and duplex settings via the IEEE 802.3ad standard.",
+                slbTitle: "3. Server Load Balancing (SLB)",
+                slbDesc: "Application-level network traffic distribution to ensure scalability and high availability of services.",
+                haproxyTitle: "HAProxy Load Balancing",
+                haproxyText: "HAProxy configuration as a high-performance reverse proxy and load balancer for TCP and HTTP protocols.",
+                btnLab: "🧪 Lab Config"
+            },
+            de: {
+                btnBack: "< ./Zurück_zur_Startseite",
+                pageTitle: "Redundanz & Hohe Verfügbarkeit",
+                pageDesc: "Die Resilienz der IT-Infrastruktur wird durch die Vermeidung von Single Points of Failure erreicht. Dieses Labor reicht von der Link-Aggregation auf der Sicherungsschicht (NIC Teaming/Bonding) bis zur Lastverteilung von Anwendungen.",
+                winTitle: "1. NIC Teaming unter Windows",
+                winDesc: "Native Konfiguration der Netzwerkadapterbündelung (LBFO) in Windows Server-Umgebungen.",
+                winSiTitle: "Switch-Independent-Modus",
+                winSiText: "Ermöglicht den Anschluss von Adaptern an verschiedene physische Switches. Erfordert keine vorherige Konfiguration der Switch-Infrastruktur.",
+                winLacpTitle: "LACP-Modus",
+                winLacpText: "Switch-abhängige dynamische Aggregation. Verwendet das Link Aggregation Control Protocol, um Verbindungen automatisch auszuhandeln.",
+                linTitle: "2. NIC Teaming unter Linux",
+                linDesc: "Implementierung von Network Bonding unter Linux zur Erzielung von Fehlertoleranz und Bandbreitenaggregation.",
+                linAbTitle: "Active-Backup-Modus (Mode 1)",
+                linAbText: "Nur eine Schnittstelle im Verbund ist aktiv. Fällt der Hauptadapter aus, übernimmt sofort eine Backup-Schnittstelle transparent.",
+                linRrTitle: "Round-Robin-Modus (Mode 0)",
+                linRrText: "Trägt Pakete sequentiell von der ersten verfügbaren Slave-Schnittstelle bis zur letzten aus und bietet statische Lastverteilung.",
+                linLacpTitle: "LACP-Modus (802.3ad / Mode 4)",
+                linLacpText: "Erstellt dynamische Aggregationsgruppen, die Geschwindigkeits- und Duplexeinstellungen über den IEEE 802.3ad-Standard teilen.",
+                slbTitle: "3. Server Load Balancing (SLB)",
+                slbDesc: "Netzwerkverkehrsverteilung auf Anwendungsebene, um Skalierbarkeit und hohe Verfügbarkeit von Diensten zu gewährleisten.",
+                haproxyTitle: "HAProxy Lastverteilung",
+                haproxyText: "HAProxy-Konfiguration als hochperformanter Reverse Proxy und Load Balancer für TCP- und HTTP-Protokolle.",
+                btnLab: "🧪 Lab Konfig"
+            }
+        };
+
+        function safeEdit(id, text) {
+            const element = document.getElementById(id);
+            if (element) element.innerText = text;
+        }
+
+        function setLanguage(lang) {
+            // Traducir textos principales
+            safeEdit('btn-back', translations[lang].btnBack);
+            safeEdit('page-title', translations[lang].pageTitle);
+            safeEdit('page-desc', translations[lang].pageDesc);
+            
+            // Sección Windows
+            safeEdit('win-title', translations[lang].winTitle);
+            safeEdit('win-desc', translations[lang].winDesc);
+            safeEdit('win-si-title', translations[lang].winSiTitle);
+            safeEdit('win-si-text', translations[lang].winSiText);
+            safeEdit('win-lacp-title', translations[lang].winLacpTitle);
+            safeEdit('win-lacp-text', translations[lang].winLacpText);
+            
+            // Sección Linux
+            safeEdit('lin-title', translations[lang].linTitle);
+            safeEdit('lin-desc', translations[lang].linDesc);
+            safeEdit('lin-ab-title', translations[lang].linAbTitle);
+            safeEdit('lin-ab-text', translations[lang].linAbText);
+            safeEdit('lin-rr-title', translations[lang].linRrTitle);
+            safeEdit('lin-rr-text', translations[lang].linRrText);
+            safeEdit('lin-lacp-title', translations[lang].linLacpTitle);
+            safeEdit('lin-lacp-text', translations[lang].linLacpText);
+
+            // Sección SLB
+            safeEdit('slb-title', translations[lang].slbTitle);
+            safeEdit('slb-desc', translations[lang].slbDesc);
+            safeEdit('haproxy-title', translations[lang].haproxyTitle);
+            safeEdit('haproxy-text', translations[lang].haproxyText);
+
+            // Actualizar textos de los botones de Laboratorio
+            const labLinks = document.querySelectorAll('.lab-link');
+            labLinks.forEach(btn => btn.innerText = translations[lang].btnLab);
+            
+            // SEO & Storage
+            document.documentElement.lang = lang;
+            localStorage.setItem('selectedLang', lang);
+            updateActiveButton(lang);
+        }
+
+        function updateActiveButton(lang) {
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            const btn = document.getElementById('btn-' + lang);
+            if (btn) btn.classList.add('active');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('selectedLang');
+            if (savedLang) {
+                setLanguage(savedLang);
+            } else {
+                updateActiveButton('es'); // Por defecto
+            }
+        });
+    </script>
+</body>
+</html>
