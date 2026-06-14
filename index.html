@@ -149,6 +149,13 @@
                     <p id="p2-desc">Integración de Directorio Activo con Google Workspace (GCDS).</p>
                     <a href="gws-ad-lab.html" class="btn" id="btn-read-2">Ver Lab ></a>
                 </article>
+
+                <article class="project-card">
+                    <span class="tag" id="tag-redundancy">REDUNDANCIA</span>
+                    <h3 id="p3-title">Redundancia y Alta Disponibilidad</h3>
+                    <p id="p3-desc">Configuración de sistemas redundantes, balanceo de carga y tolerancia a fallos.</p>
+                    <a href="lab-redundancia.html" class="btn" id="btn-read-3">Ver Lab ></a>
+                </article>
             </div>
         </div>
     </main>
@@ -172,6 +179,10 @@
                 p2Title: "Integración GWS y Windows AD",
                 p2Desc: "Integración de Directorio Activo con Google Workspace (GCDS).",
                 
+                tagRedundancy: "REDUNDANCIA",
+                p3Title: "Redundancia y Alta Disponibilidad",
+                p3Desc: "Configuración de sistemas redundantes, balanceo de carga y tolerancia a fallos.",
+                
                 btnRead: "Ver Lab >"
             },
             en: {
@@ -187,6 +198,10 @@
                 p2Title: "GWS & Windows AD Integration",
                 p2Desc: "Active Directory integration with Google Workspace (GCDS).",
                 
+                tagRedundancy: "REDUNDANCY",
+                p3Title: "Redundancy & High Availability",
+                p3Desc: "Configuration of redundant systems, load-balancing, and fault tolerance.",
+                
                 btnRead: "View Lab >"
             },
             de: {
@@ -201,6 +216,10 @@
                 tagCloud: "CLOUD & IDENTITY",
                 p2Title: "Integration von GWS & Windows AD",
                 p2Desc: "Active Directory-Integration mit Google Workspace (GCDS).",
+                
+                tagRedundancy: "REDUNDANZ",
+                p3Title: "Redundanz & Hohe Verfügbarkeit",
+                p3Desc: "Konfiguration redundanter Systeme, Lastverteilung und Fehlertoleranz.",
                 
                 btnRead: "Labor ansehen >"
             }
@@ -230,6 +249,12 @@
             safeEdit('p2-title', translations[lang].p2Title);
             safeEdit('p2-desc', translations[lang].p2Desc);
             safeEdit('btn-read-2', translations[lang].btnRead);
+
+            // Proyecto 3 (Redundancia)
+            safeEdit('tag-redundancy', translations[lang].tagRedundancy);
+            safeEdit('p3-title', translations[lang].p3Title);
+            safeEdit('p3-desc', translations[lang].p3Desc);
+            safeEdit('btn-read-3', translations[lang].btnRead);
             
             // SEO & Storage
             document.documentElement.lang = lang;
