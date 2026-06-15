@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Win Server Switch Independent | Learning_Path</title>
+
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+
     <style>
         :root {
             --bg-color: #0a0b10;
@@ -26,9 +28,10 @@
             line-height: 1.6;
         }
 
-        h1, h2, h3, .code-font, .lang-btn, pre { font-family: 'Fira Code', monospace; }
+        h1, h2, h3, .code-font, .lang-btn, pre {
+            font-family: 'Fira Code', monospace;
+        }
 
-        /* HEADER */
         header {
             padding: 0 5%;
             background: rgba(10, 11, 16, 0.98);
@@ -37,28 +40,28 @@
             top: 0;
             z-index: 1000;
             height: 80px;
-            display: flex; 
+            display: flex;
             align-items: center;
         }
 
         .back-btn {
-            text-decoration: none; 
-            color: var(--accent-color); 
+            text-decoration: none;
+            color: var(--accent-color);
             font-weight: 600;
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
+            display: flex;
+            align-items: center;
+            gap: 10px;
             transition: transform 0.2s;
         }
+
         .back-btn:hover { transform: translateX(-5px); }
 
-        /* SELECTOR FLOTANTE */
-        .lang-selector { 
+        .lang-selector {
             position: fixed;
             top: 25px;
             right: 5%;
             z-index: 99999;
-            display: flex; 
+            display: flex;
             gap: 8px;
         }
 
@@ -71,287 +74,125 @@
             padding: 6px 10px;
             border-radius: 4px;
             font-weight: 600;
-            transition: all 0.2s ease;
         }
 
-        .lang-btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
         .lang-btn.active {
             background-color: rgba(0, 240, 255, 0.1);
             border-color: var(--accent-color);
             color: var(--accent-color);
-            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
         }
 
-        @media (max-width: 600px) {
-            .lang-selector { top: 25px; right: 3%; gap: 5px; }
-            .lang-btn { padding: 4px 6px; font-size: 0.75rem; background: rgba(10, 11, 16, 0.9); }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 1rem;
         }
 
-        /* CONTENIDO */
-        .container { max-width: 900px; margin: 0 auto; padding: 3rem 1rem; }
-        .intro-box { border-left: 4px solid var(--win-color); padding-left: 1.5rem; margin-bottom: 2.5rem; }
-        
+        .intro-box {
+            border-left: 4px solid var(--win-color);
+            padding-left: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
         .lab-section { margin-bottom: 3rem; }
-        .lab-section h2 { font-size: 1.4rem; color: #fff; margin-bottom: 1rem; border-bottom: 1px solid #30363d; padding-bottom: 0.4rem; }
-        
-        ul, ol { padding-left: 1.5rem; margin-bottom: 1.5rem; color: var(--text-primary); }
-        li { margin-bottom: 0.5rem; }
-        li strong { color: var(--accent-color); }
 
-        /* COMANDOS TERMINAL */
+        ul, ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
         pre {
             background-color: var(--terminal-bg);
-            border: 1px solid var(--placeholder-border);
             border-radius: 6px;
             padding: 1.2rem;
-            color: #f0f6fc;
-            font-size: 0.9rem;
             overflow-x: auto;
-            margin: 1.5rem 0;
-            line-height: 1.4;
         }
-        pre span.prompt { color: var(--win-color); }
 
-        /* CONTENEDORES PARA CAPTURAS */
+        /* ✅ FIX IMÁGENES */
+        .lab-img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 6px;
+        }
+
         .screenshot-placeholder {
             border: 2px dashed var(--placeholder-border);
             background: #11141a;
             border-radius: 8px;
             padding: 2.5rem 1rem;
-            text-align: center;
-            color: var(--text-secondary);
-            margin: 1.5rem 0 2.5rem 0;
-            font-size: 0.9rem;
+             margin: 1.5rem 0 2.5rem 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             gap: 8px;
         }
-        .screenshot-placeholder span.icon { font-size: 1.8rem; color: var(--accent-color); }
 
-        footer { text-align: center; padding: 2rem; border-top: 1px solid #30363d; margin-top: 3rem; color: var(--text-secondary); }
+        /* ✅ OPTIMIZACIÓN MÓVIL */
+        @media (max-width: 600px) {
+            .screenshot-placeholder {
+                padding: 1rem;
+            }
+            .lang-selector {
+                right: 3%;
+            }
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid #30363d;
+            margin-top: 3rem;
+        }
     </style>
 </head>
+
 <body>
 
-    <header>
-        <a href="lab-redundancia.html" class="back-btn" id="btn_back">&lt; ./Volver_a_Redundancia</a>
-    </header>
+<header>
+    <a href="lab-redundancia.html" class="back-btn">< ./Volver</a>
+</header>
 
-    <div class="lang-selector">
-        <button id="btn-es" class="lang-btn active" onclick="setLanguage('es')">ES</button>
-        <button id="btn-en" class="lang-btn" onclick="setLanguage('en')">EN</button>
-        <button id="btn-de" class="lang-btn" onclick="setLanguage('de')">DE</button>
+<main class="container">
+
+    <h1>Modo Switch Independent</h1>
+
+    <div class="intro-box">
+        <p>Configuración de agregación de enlaces en modo independiente.</p>
     </div>
 
-    <main class="container">
-        
-        <h1 style="margin-bottom: 0.5rem; font-size: 2.2rem; color: var(--win-color);" id="page_title">Modo Switch Independent (Windows)</h1>
-        
-        <div class="intro-box">
-            <p id="page_desc">
-                Configuración de agregación de enlaces en modo independiente. Este despliegue permite asociar múltiples NICs físicas en un único equipo lógico sin requerir modificaciones ni soporte de protocolos cooperativos en los switches de la infraestructura.
-            </p>
+    <section class="lab-section">
+        <h2>Requisitos</h2>
+
+        <div class="screenshot-placeholder">
+            img/nodos-gns3.png
+            <p>Topología GNS3</p>
         </div>
+    </section>
 
-        <section class="lab-section">
-            <h2 id="title_req">Requisitos en GNS3</h2>
-            <ul>
-                <li id="req_1"><strong>1x Máquina Virtual:</strong> Windows Server (configurada en GNS3 con 2 adaptadores de red en la pestaña "Network" de la VM).</li>
-                <li id="req_2"><strong>1x Switch gestionable:</strong> Cisco vIOS L2 o similar.</li>
-            </ul>
-            
-            <div class="screenshot-placeholder">
-                <img src="img/nodos-gns3.png" alt="GNS3 Nodes" class="lab-img">
-                <p id="ph_nodes">Captura: Topología de nodos y cableado en GNS3</p>
-            </div>
-        </section>
+    <section class="lab-section">
+        <h2>Configuración</h2>
 
-        <section class="lab-section">
-            <h2 id="title_step1">Paso 1: Configurar el Switch Cisco</h2>
-            <p id="desc_step1">Al trabajar en modo Switch Independent, el switch no sabe que los enlaces pertenecen al mismo equipo. Los puertos se configuran como modo acceso estándar, aplicando Spanning-Tree Portfast para asegurar una convergencia inmediata tras un failover:</p>
-            
-<pre>
-<span class="prompt">Switch#</span> configure terminal
-<span class="prompt">Switch(config)#</span> vlan 10
-<span class="prompt">Switch(config-vlan)#</span> exit
-<span class="prompt">Switch(config)#</span> interface vlan 10
-<span class="prompt">Switch(config-if)#</span> ip address 192.168.10.1 255.255.255.0
-<span class="prompt">Switch(config-if)#</span> exit
-<span class="prompt">Switch(config)#</span> interface range gigabitEthernet 0/1 - 2
-<span class="prompt">Switch(config-if-range)#</span> switchport mode access
-<span class="prompt">Switch(config-if-range)#</span> switchport access vlan 10
-<span class="prompt">Switch(config-if-range)#</span> spanning-tree portfast
-</pre>
-        </section>
+        <div class="screenshot-placeholder">
+            img/win-nic-config.png
+            <p>Configuración Windows</p>
+        </div>
+    </section>
 
-        <section class="lab-section">
-            <h2 id="title_step2">Paso 2: Configurar Windows Server</h2>
-            <ol>
-                <li id="s2_1">Abre el <strong>Server Manager</strong> y dirígete al apartado de <strong>Local Server</strong>.</li>
-                <li id="s2_2">Localiza la propiedad de <strong>NIC Teaming</strong> y haz clic sobre la opción <strong>Disabled</strong>.</li>
-                <li id="s2_3">En el panel inferior de la nueva ventana, haz clic en <strong>Tasks</strong> -> <strong>New Team</strong>.</li>
-                <li id="s2_4">Asigna un nombre al conjunto (ej. <code>Active-Backup</code>) y marca las casillas de las dos tarjetas de red disponibles.</li>
-                <li id="s2_5">Despliega el menú de <strong>Additional Properties</strong> y establece los siguientes parámetros técnicos:</li>
-                <ul style="margin-top: 0.5rem; list-style-type: square; padding-left: 1.5rem;">
-                    <li id="param_1"><strong>Teaming mode:</strong> Switch Independent</li>
-                    <li id="param_2"><strong>Load balancing mode:</strong> Dynamic</li>
-                    <li id="param_3"><strong>Standby adapter:</strong> Selecciona una de las dos tarjetas (esta actuará como reserva y permanecerá inactiva mientras el enlace principal funcione).</li>
-                </ul>
-                <li id="s2_6">Haz clic en <strong>OK</strong> para aplicar los cambios de red.</li>
-            </ol>
+    <section class="lab-section">
+        <h2>Prueba</h2>
 
-            <div class="screenshot-placeholder">
-                <img src="img/win-nic-config.png" alt="Windows Teaming Config" class="lab-img">
-                <p id="ph_config">Captura: Ventana de configuración del New Team en Windows Server</p>
-            </div>
-        </section>
+        <div class="screenshot-placeholder">
+            img/win-nic-status.png
+            <p>Estado adaptadores</p>
+        </div>
+    </section>
 
-        <section class="lab-section">
-            <h2 id="title_test">🧪 Prueba de Laboratorio</h2>
-            <p id="desc_test">Inicia la consola de comandos de Windows (cmd) y ejecuta un comando de diagnóstico de conectividad continua hacia la IP virtual asignada en el switch central: <code>ping -t 192.168.10.1</code>. Mientras se envían las peticiones, regresa al entorno gráfico de GNS3, haz clic derecho sobre el cable conectado a la interfaz de red activa de Windows y selecciona la acción <strong>Delete</strong>. Observarás que la transmisión apenas experimenta un retraso insignificante (perdiendo como máximo un único paquete), dado que el adaptador en Standby asume el tráfico de forma autónoma.</p>
+</main> <!-- ✅ CORREGIDO -->
 
-            <div class="screenshot-placeholder">
-                <img src="img/win-nic-status.png" alt="Windows Teaming Status" class="lab-img">
-                <p id="ph_status">Captura: Panel de estado de los adaptadores reflejando la transición Active-Standby</p>
-            </div>
-        </section>
+<footer>
+    <p>© 2025 fergava.es</p>
+</footer>
 
- <main>
-
-    <footer>
-        <p>&copy; 2025 fergava.es | Switch Independent Lab</p>
-    </footer>
-
-    <script>
-        const translations = {
-            es: {
-                btn_back: "< ./Volver_a_Redundancia",
-                page_title: "Modo Switch Independent (Windows)",
-                page_desc: "Configuración de agregación de enlaces en modo independiente. Este despliegue permite asociar múltiples NICs físicas en un único equipo lógico sin requerir modificaciones ni soporte de protocolos cooperativos en los switches de la infraestructura.",
-                title_req: "Requisitos en GNS3",
-                req_1: "<strong>1x Máquina Virtual:</strong> Windows Server (configurada en GNS3 con 2 adaptadores de red en la pestaña 'Network' de la VM).",
-                req_2: "<strong>1x Switch gestionable:</strong> Cisco vIOS L2 o similar.",
-                title_step1: "Paso 1: Configurar el Switch Cisco",
-                desc_step1: "Al trabajar en modo Switch Independent, el switch no sabe que los enlaces pertenecen al mismo equipo. Los puertos se configuran como modo acceso estándar, aplicando Spanning-Tree Portfast para asegurar una convergencia inmediata tras un failover:",
-                title_step2: "Paso 2: Configurar Windows Server",
-                s2_1: "Abre el <strong>Server Manager</strong> y dirígete al apartado de <strong>Local Server</strong>.",
-                s2_2: "Localiza la propiedad de <strong>NIC Teaming</strong> y haz clic sobre la opción <strong>Disabled</strong>.",
-                s2_3: "En el panel inferior de la nueva ventana, haz clic en <strong>Tasks</strong> -> <strong>New Team</strong>.",
-                s2_4: "Asigna un nombre al conjunto (ej. <code>Active-Backup</code>) y marca las casillas de las dos tarjetas de red disponibles.",
-                s2_5: "Despliega el menú de <strong>Additional Properties</strong> y establece los siguientes parámetros técnicos:",
-                param_1: "<strong>Teaming mode:</strong> Switch Independent",
-                param_2: "<strong>Load balancing mode:</strong> Dynamic",
-                param_3: "<strong>Standby adapter:</strong> Selecciona una de las dos tarjetas (esta actuará como reserva y permanecerá inactiva mientras el enlace principal funcione).",
-                s2_6: "Haz clic en <strong>OK</strong> para aplicar los cambios de red.",
-                title_test: "🧪 Prueba de Laboratorio",
-                desc_test: "Inicia la consola de comandos de Windows (cmd) y ejecuta un comando de diagnóstico de conectividad continua hacia la IP virtual asignada en el switch central: <code>ping -t 192.168.10.1</code>. Mientras se envían las peticiones, regresa al entorno gráfico de GNS3, haz clic derecho sobre el cable conectado a la interfaz de red activa de Windows y selecciona la acción <strong>Delete</strong>. Observarás que la transmisión apenas experimenta un retraso insignificante (perdiendo como máximo un único paquete), dado que el adaptador en Standby asume el tráfico de forma autónoma.",
-                ph_nodes: "Captura: Topología de nodos y cableado en GNS3",
-                ph_config: "Captura: Ventana de configuración del New Team en Windows Server",
-                ph_status: "Captura: Panel de estado de los adaptadores reflejando la transición Active-Standby"
-            },
-            en: {
-                btn_back: "< ./Back_to_Redundancy",
-                page_title: "Switch Independent Mode (Windows)",
-                page_desc: "Link aggregation configuration in independent mode. This deployment allows grouping multiple physical NICs into a single logical link without requiring any configuration or protocol support on the infrastructure switches.",
-                title_req: "GNS3 Requirements",
-                req_1: "<strong>1x Virtual Machine:</strong> Windows Server (configured in GNS3 with 2 network adapters under the VM's 'Network' tab).",
-                req_2: "<strong>1x Manageable Switch:</strong> Cisco vIOS L2 or similar.",
-                title_step1: "Step 1: Configure the Cisco Switch",
-                desc_step1: "When working in Switch Independent mode, the switch is unaware that the links belong to the same server. Ports are configured in standard access mode, applying Spanning-Tree Portfast to guarantee immediate convergence after a failover:",
-                title_step2: "Step 2: Configure Windows Server",
-                s2_1: "Open <strong>Server Manager</strong> and navigate to <strong>Local Server</strong>.",
-                s2_2: "Locate the <strong>NIC Teaming</strong> property and click on the <strong>Disabled</strong> status.",
-                s2_3: "In the lower section of the new window, click on <strong>Tasks</strong> -> <strong>New Team</strong>.",
-                s2_4: "Assign a name to the group (e.g., <code>Active-Backup</code>) and check the boxes for the two available network adapters.",
-                s2_5: "Expand the <strong>Additional Properties</strong> section and configure the following technical parameters:",
-                param_1: "<strong>Teaming mode:</strong> Switch Independent",
-                param_2: "<strong>Load balancing mode:</strong> Dynamic",
-                param_3: "<strong>Standby adapter:</strong> Select one of the two adapters (it will act as a spare and remain inactive as long as the primary link is functional).",
-                s2_6: "Click <strong>OK</strong> to apply the network changes.",
-                title_test: "🧪 Lab Testing",
-                desc_test: "Open the Windows command prompt (cmd) and run a continuous connectivity diagnostic ping to the switch interface IP: <code>ping -t 192.168.10.1</code>. While requests are flowing, return to the GNS3 workspace, right-click on the active network adapter's cable, and choose <strong>Delete</strong>. You will witness that transmission suffers minimal to no loss (dropping at most a single packet) because the Standby adapter assumes traffic handling immediately.",
-                ph_nodes: "Screenshot: Nodes topology and cabling in GNS3",
-                ph_config: "Screenshot: New Team configuration window in Windows Server",
-                ph_status: "Screenshot: Adapters status panel showing the Active-Standby transition"
-            },
-            de: {
-                btn_back: "< ./Zurück_zu_Redundanz",
-                page_title: "Switch-Independent-Modus (Windows)",
-                page_desc: "Konfiguration der Link-Aggregation im unabhängigen Modus. Diese Implementierung erlaubt die Bündelung mehrerer physischer NICs in ein einziges logisches Team, ohne dass Änderungen oder Protokollunterstützungen auf den Netzwerk-Switches erforderlich sind.",
-                title_req: "GNS3-Anforderungen",
-                req_1: "<strong>1x Virtuelle Maschine:</strong> Windows Server (in GNS3 mit 2 Netzwerkadaptern in den VM-Netzwerkeinstellungen konfiguriert).",
-                req_2: "<strong>1x Verwaltbarer Switch:</strong> Cisco vIOS L2 oder ähnlich.",
-                title_step1: "Schritt 1: Cisco-Switch konfigurieren",
-                desc_step1: "Da das Team im Switch-Independent-Modus arbeitet, weiß der Switch nicht, dass die Verbindungen zum selben Server gehören. Die Ports werden als Standard-Access-Ports konfiguriert, wobei Spanning-Tree Portfast aktiviert wird, um eine sofortige Konvergenz zu gewährleisten:",
-                title_step2: "Schritt 2: Windows Server konfigurieren",
-                s2_1: "Öffnen Sie den <strong>Server-Manager</strong> und rufen Sie den Bereich <strong>Local Server</strong> auf.",
-                s2_2: "Suchen Sie die Eigenschaft <strong>NIC Teaming</strong> und klicken Sie auf den Status <strong>Disabled</strong>.",
-                s2_3: "Klicken Sie im unteren Bereich des neuen Fensters auf <strong>Tasks</strong> -> <strong>New Team</strong>.",
-                s2_4: "Geben Sie dem Team einen Namen (z. B. <code>Active-Backup</code>) und wählen Sie die beiden verfügbaren Netzwerkkarten aus.",
-                s2_5: "Erweitern Sie das Menü <strong>Additional Properties</strong> und stellen Sie folgende Parameter ein:",
-                param_1: "<strong>Teaming mode:</strong> Switch Independent",
-                param_2: "<strong>Load balancing mode:</strong> Dynamic",
-                param_3: "<strong>Standby adapter:</strong> Wählen Sie eine der beiden Karten aus (diese fungiert als Reserve und bleibt inaktiv, solange die primäre Verbindung funktioniert).",
-                s2_6: "Klicken Sie auf <strong>OK</strong>, um die Netzwerkeinstellungen zu übernehmen.",
-                title_test: "🧪 Labortest",
-                desc_test: "Öffnen Sie die Windows-Eingabeaufforderung (cmd) und starten Sie einen dauerhaften Ping zur IP des Switches: <code>ping -t 192.168.10.1</code>. Während die Pakete gesendet werden, wechseln Sie zurück zu GNS3, klicken Sie mit der rechten Maustaste auf das Kabel der aktiven Netzwerkkarte und wählen Sie <strong>Delete</strong>. Sie werden sehen, dass die Verbindung kaum unterbrochen wird (maximal geht ein einzelnes Paket verloren), da der Standby-Adapter den Datenverkehr sofort autonom übernimmt.",
-                ph_nodes: "Screenshot: Knotentopologie und Verkabelung in GNS3",
-                ph_config: "Screenshot: New Team-Konfigurationsfenster in Windows Server",
-                ph_status: "Screenshot: Adapter-Statusfenster, das den Übergang von Active zu Standby anzeigt"
-            }
-        };
-
-        function safeEdit(id, text) {
-            const element = document.getElementById(id);
-            if (element) element.innerHTML = text;
-        }
-
-        function setLanguage(lang) {
-            safeEdit('btn_back', translations[lang].btn_back);
-            safeEdit('page_title', translations[lang].page_title);
-            safeEdit('page_desc', translations[lang].page_desc);
-            safeEdit('title_req', translations[lang].title_req);
-            safeEdit('req_1', translations[lang].req_1);
-            safeEdit('req_2', translations[lang].req_2);
-            safeEdit('title_step1', translations[lang].title_step1);
-            safeEdit('desc_step1', translations[lang].desc_step1);
-            safeEdit('title_step2', translations[lang].title_step2);
-            safeEdit('s2_1', translations[lang].s2_1);
-            safeEdit('s2_2', translations[lang].s2_2);
-            safeEdit('s2_3', translations[lang].s2_3);
-            safeEdit('s2_4', translations[lang].s2_4);
-            safeEdit('s2_5', translations[lang].s2_5);
-            safeEdit('param_1', translations[lang].param_1);
-            safeEdit('param_2', translations[lang].param_2);
-            safeEdit('param_3', translations[lang].param_3);
-            safeEdit('s2_6', translations[lang].s2_6);
-            safeEdit('title_test', translations[lang].title_test);
-            safeEdit('desc_test', translations[lang].desc_test);
-            safeEdit('ph_nodes', translations[lang].ph_nodes);
-            safeEdit('ph_config', translations[lang].ph_config);
-            safeEdit('ph_status', translations[lang].ph_status);
-            
-            document.documentElement.lang = lang;
-            localStorage.setItem('selectedLang', lang);
-            updateActiveButton(lang);
-        }
-
-        function updateActiveButton(lang) {
-            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-            const btn = document.getElementById('btn-' + lang);
-            if (btn) btn.classList.add('active');
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedLang = localStorage.getItem('selectedLang');
-            if (savedLang) {
-                setLanguage(savedLang);
-            } else {
-                updateActiveButton('es');
-            }
-        });
-    </script>
 </body>
 </html>
